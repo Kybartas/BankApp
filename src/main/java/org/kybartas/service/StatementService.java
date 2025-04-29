@@ -6,7 +6,9 @@ import com.opencsv.CSVWriter;
 import org.kybartas.entity.Statement;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileWriter;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.nio.file.Files;
@@ -95,27 +97,31 @@ public class StatementService {
         return balance;
     }
 
-    public void exportCSV(List<Statement> statements, Path filePath) throws Exception {
-        List<String[]> rows = new ArrayList<>();
+    public byte[] exportCSV(List<Statement> statements) {
 
-        rows.add(new String[] {"Account Number", "Date", "Beneficiary", "Description", "Amount", "Currency", "Type"});
+        try {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            CSVWriter writer = new CSVWriter(new OutputStreamWriter(out));
 
-        for (Statement statement : statements) {
-            rows.add(new String[] {
-                    statement.getAccountNumber(),
-                    statement.getDate().toString(),
-                    statement.getBeneficiary(),
-                    statement.getDescription(),
-                    statement.getAmount().toString(),
-                    statement.getCurrency(),
-                    statement.getType()
-            });
-        }
+            writer.writeNext(new String[] {"Account Number", "Date", "Beneficiary", "Description", "Amount", "Currency", "Type"});
 
-        try (CSVWriter writer = new CSVWriter(new FileWriter(filePath.toString()))) {
-            for (String[] row : rows) {
-                writer.writeNext(row);
+            for (Statement s : statements) {
+                writer.writeNext(new String[] {
+                        s.getAccountNumber(),
+                        s.getDate().toString(),
+                        s.getBeneficiary(),
+                        s.getDescription(),
+                        s.getAmount().toString(),
+                        s.getCurrency(),
+                        s.getType()
+                });
             }
+
+            writer.close();
+            return out.toByteArray();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to export CSV", e);
         }
     }
 
