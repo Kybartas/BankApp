@@ -1,5 +1,6 @@
 package org.kybartas.controller;
 
+import org.kybartas.entity.Account;
 import org.kybartas.entity.Statement;
 import org.kybartas.service.StatementService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,26 +22,43 @@ import java.util.List;
 public class StatementController {
 
     private final StatementService statementService;
-    private List<Statement> statements = new ArrayList<>();
+    private final List<Account> accounts = new ArrayList<>();
 
     @Autowired
     public StatementController(StatementService statementService) {
+
         this.statementService = statementService;
     }
 
-    @PostMapping("/upload")
+    @PostMapping("/import")
     public ResponseEntity<List<Statement>> uploadCSV(@RequestParam("file") MultipartFile file) {
 
         try {
             Path tempFile = Files.createTempFile("upload", ".csv");
             file.transferTo(tempFile.toFile());
-            statements = statementService.importCSV(tempFile);
-            Files.delete(tempFile);
-            return new ResponseEntity<>(statements, HttpStatus.OK);
 
+            List<Statement> newStatements = statementService.importCSV(tempFile);
+            Account newAccount = new Account(newStatements.get(0).getAccountNumber(), newStatements);
+            accounts.add(newAccount);
+
+            Files.delete(tempFile);
+
+            return new ResponseEntity<>(newAccount.getStatements(), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/export")
+    public ResponseEntity<byte[]> exportCSV() {
+
+        byte[] csvData = statementService.exportCSV(getAllStatements());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=statements.csv");
+        headers.add(HttpHeaders.CONTENT_TYPE, "text/csv");
+
+        return new ResponseEntity<>(csvData, headers, HttpStatus.OK);
     }
 
     @GetMapping("/filter")
@@ -49,7 +66,7 @@ public class StatementController {
             @RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
 
-        List<Statement> filtered = statementService.filterByDateRange(statements, from, to);
+        List<Statement> filtered = statementService.filterByDateRange(getAllStatements(), from, to);
         return new ResponseEntity<>(filtered, HttpStatus.OK);
     }
 
@@ -59,25 +76,25 @@ public class StatementController {
             @RequestParam(value = "from", required = false) LocalDate from,
             @RequestParam(value = "to", required = false) LocalDate to) {
 
-        if(from == null || to == null) {
-            BigDecimal balance = statementService.calculateBalance(statements, accountNumber);
-            return new ResponseEntity<>(balance, HttpStatus.OK);
-        } else {
-            List<Statement> filtered = statementService.filterByDateRange(statements, from, to);
-            BigDecimal balance = statementService.calculateBalance(filtered, accountNumber);
-            return new ResponseEntity<>(balance, HttpStatus.OK);
-        }
+        Account selectedAccount = findAccountByNumber(accountNumber);
+
+        List<Statement> accountStatements = selectedAccount.getStatements();
+
+        BigDecimal balance = selectedAccount.getBalance(from, to);
+        return new ResponseEntity<>(balance, HttpStatus.OK);
     }
 
-    @GetMapping("/export")
-    public ResponseEntity<byte[]> exportCSV() {
-
-        byte[] csvData = statementService.exportCSV(statements);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=statements.csv");
-        headers.add(HttpHeaders.CONTENT_TYPE, "text/csv");
-
-        return new ResponseEntity<>(csvData, headers, HttpStatus.OK);
+    private List<Statement> getAllStatements() {
+        return accounts.stream()
+                .flatMap(account -> account.getStatements().stream())
+                .toList();
     }
+
+    private Account findAccountByNumber(String accountNumber) {
+        return accounts.stream()
+                .filter(a -> a.getAccountNumber().equals(accountNumber))
+                .findFirst()
+                .orElse(null);
+    }
+
 }

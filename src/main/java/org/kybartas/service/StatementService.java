@@ -7,7 +7,6 @@ import org.kybartas.entity.Statement;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileWriter;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.math.BigDecimal;
@@ -22,7 +21,7 @@ import java.util.stream.Collectors;
 @Service
 public class StatementService {
 
-    // Reads entire csv file
+    //  Utility function for import CSV. Reads entire csv file
     private List<String[]> readRawCSV(Path filePath) throws Exception {
         try (Reader reader = Files.newBufferedReader(filePath)) {
             try (CSVReader csvReader = new CSVReader(reader)) {
@@ -31,7 +30,7 @@ public class StatementService {
         }
     }
 
-    // Remakes statement to show required information
+    // Utility function for import CSV. Remakes statement to show required information
     private List<String[]> filterSwedTable(List<String[]> table) {
         int[] indexes = {0, 2, 3, 4, 5, 6, 7};
 
@@ -52,6 +51,7 @@ public class StatementService {
         return filteredTable;
     }
 
+    // Utility function for import CSV. Stores processed data as Statement objects
     private List<Statement> convertToStatements(List<String[]> filteredData) {
         List<Statement> statements = new ArrayList<>();
 
@@ -74,27 +74,6 @@ public class StatementService {
         List<String[]> rawCSVData = readRawCSV(filePath);
         List<String[]> filteredData = filterSwedTable(rawCSVData);
         return convertToStatements(filteredData);
-    }
-
-    public  List<Statement> filterByDateRange(List<Statement> statements, LocalDate from, LocalDate to) {
-        return statements.stream()
-                .filter(s -> !s.getDate().isBefore(from) && !s.getDate().isAfter(to))
-                .collect(Collectors.toList());
-    }
-
-    public  BigDecimal calculateBalance(List<Statement> statements, String accountNumber) {
-
-        BigDecimal balance = BigDecimal.ZERO;
-        for (Statement statement : statements) {
-            if (statement.getAccountNumber().equals(accountNumber)) {
-                if ("K".equals(statement.getType())) {
-                    balance = balance.add(statement.getAmount());
-                } else if ("D".equals(statement.getType())) {
-                    balance = balance.subtract(statement.getAmount());
-                }
-            }
-        }
-        return balance;
     }
 
     public byte[] exportCSV(List<Statement> statements) {
@@ -125,10 +104,10 @@ public class StatementService {
         }
     }
 
-    public void printStatements(List<Statement> statements) {
-        for (Statement statement : statements) {
-            statement.printStatement();
-        }
+    public  List<Statement> filterByDateRange(List<Statement> statements, LocalDate from, LocalDate to) {
+        return statements.stream()
+                .filter(s -> !s.getDate().isBefore(from) && !s.getDate().isAfter(to))
+                .collect(Collectors.toList());
     }
 
 }
