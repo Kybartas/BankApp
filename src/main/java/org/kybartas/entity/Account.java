@@ -45,6 +45,24 @@ public class Account {
                 .collect(Collectors.toList());
     }
 
+    public BigDecimal getBalance() {
+
+        List<Statement> tempStatements = statements;
+
+        BigDecimal balance = BigDecimal.ZERO;
+
+        for (Statement statement : tempStatements) {
+
+            if ("K".equals(statement.getType())) {
+                balance = balance.add(statement.getAmount());
+            } else if ("D".equals(statement.getType())) {
+                balance = balance.subtract(statement.getAmount());
+            }
+        }
+
+        return balance;
+    }
+
     public BigDecimal getBalance(LocalDate from, LocalDate to) {
 
         List<Statement> tempStatements = statements;

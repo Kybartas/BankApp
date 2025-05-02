@@ -80,6 +80,11 @@ public class StatementController {
 
         List<Statement> accountStatements = selectedAccount.getStatements();
 
+        if(from == null && to == null) {
+            BigDecimal balance = selectedAccount.getBalance();
+            return new ResponseEntity<>(balance, HttpStatus.OK);
+        }
+
         BigDecimal balance = selectedAccount.getBalance(from, to);
         return new ResponseEntity<>(balance, HttpStatus.OK);
     }
