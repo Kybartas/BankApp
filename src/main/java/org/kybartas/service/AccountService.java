@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class StatementService {
+public class AccountService {
 
     //  Utility function for import CSV. Reads entire csv file
     private List<String[]> readRawCSV(Path filePath) throws Exception {

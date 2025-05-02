@@ -2,7 +2,7 @@ package org.kybartas.controller;
 
 import org.kybartas.entity.Account;
 import org.kybartas.entity.Statement;
-import org.kybartas.service.StatementService;
+import org.kybartas.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
@@ -19,15 +19,15 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/statements")
-public class StatementController {
+public class AccountController {
 
-    private final StatementService statementService;
+    private final AccountService accountService;
     private final List<Account> accounts = new ArrayList<>();
 
     @Autowired
-    public StatementController(StatementService statementService) {
+    public AccountController(AccountService accountService) {
 
-        this.statementService = statementService;
+        this.accountService = accountService;
     }
 
     @PostMapping("/import")
@@ -37,7 +37,7 @@ public class StatementController {
             Path tempFile = Files.createTempFile("upload", ".csv");
             file.transferTo(tempFile.toFile());
 
-            List<Statement> newStatements = statementService.importCSV(tempFile);
+            List<Statement> newStatements = accountService.importCSV(tempFile);
             Account newAccount = new Account(newStatements.get(0).getAccountNumber(), newStatements);
             accounts.add(newAccount);
 
@@ -52,7 +52,7 @@ public class StatementController {
     @GetMapping("/export")
     public ResponseEntity<byte[]> exportCSV() {
 
-        byte[] csvData = statementService.exportCSV(getAllStatements());
+        byte[] csvData = accountService.exportCSV(getAllStatements());
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=statements.csv");
@@ -66,7 +66,7 @@ public class StatementController {
             @RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
 
-        List<Statement> filtered = statementService.filterByDateRange(getAllStatements(), from, to);
+        List<Statement> filtered = accountService.filterByDateRange(getAllStatements(), from, to);
         return new ResponseEntity<>(filtered, HttpStatus.OK);
     }
 

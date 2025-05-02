@@ -10,14 +10,14 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class StatementServiceTest {
+public class AccountServiceTest {
 
-    private StatementService statementService;
+    private AccountService accountService;
     private List<Statement> dummyStatements;
 
     @BeforeEach
     void setUp() {
-        statementService = new StatementService();
+        accountService = new AccountService();
 
         dummyStatements = List.of(
                 new Statement("111", LocalDate.of(2025,1,1), "A", "things", new BigDecimal(20), "EUR", "K"),
@@ -28,7 +28,7 @@ public class StatementServiceTest {
 
     @Test
     void testFilterByDateRange() {
-        List<Statement> result = statementService.filterByDateRange(dummyStatements, LocalDate.of(2025,1,1), LocalDate.of(2025,2,2));
+        List<Statement> result = accountService.filterByDateRange(dummyStatements, LocalDate.of(2025,1,1), LocalDate.of(2025,2,2));
 
         assertEquals(2, result.size());
         assertEquals("A", result.get(0).getBeneficiary());
