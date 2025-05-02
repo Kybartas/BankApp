@@ -3,6 +3,7 @@ package org.kybartas.service;
 
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
+import org.kybartas.entity.Account;
 import org.kybartas.entity.Statement;
 import org.springframework.stereotype.Service;
 
@@ -70,10 +71,11 @@ public class AccountService {
         return statements;
     }
 
-    public List<Statement> importCSV (Path filePath) throws Exception {
+    public Account importCSV (Path filePath) throws Exception {
         List<String[]> rawCSVData = readRawCSV(filePath);
         List<String[]> filteredData = filterSwedTable(rawCSVData);
-        return convertToStatements(filteredData);
+        List<Statement> statements = convertToStatements(filteredData);
+        return new Account(statements.get(0).getAccountNumber(), statements);
     }
 
     public byte[] exportCSV(List<Statement> statements) {

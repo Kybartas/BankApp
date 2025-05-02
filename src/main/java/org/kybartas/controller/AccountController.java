@@ -31,19 +31,18 @@ public class AccountController {
     }
 
     @PostMapping("/import")
-    public ResponseEntity<List<Statement>> uploadCSV(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<Account> uploadCSV(@RequestParam("file") MultipartFile file) {
 
         try {
             Path tempFile = Files.createTempFile("upload", ".csv");
             file.transferTo(tempFile.toFile());
 
-            List<Statement> newStatements = accountService.importCSV(tempFile);
-            Account newAccount = new Account(newStatements.get(0).getAccountNumber(), newStatements);
+            Account newAccount = accountService.importCSV(tempFile);
             accounts.add(newAccount);
 
             Files.delete(tempFile);
 
-            return new ResponseEntity<>(newAccount.getStatements(), HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
