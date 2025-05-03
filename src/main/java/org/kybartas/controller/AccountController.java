@@ -88,12 +88,6 @@ public class AccountController {
         return new ResponseEntity<>(balance, HttpStatus.OK);
     }
 
-    private List<Statement> getAllStatements() {
-        return accounts.stream()
-                .flatMap(account -> account.getStatements().stream())
-                .toList();
-    }
-
     private Account findAccountByNumber(String accountNumber) {
         return accounts.stream()
                 .filter(a -> a.getAccountNumber().equals(accountNumber))
