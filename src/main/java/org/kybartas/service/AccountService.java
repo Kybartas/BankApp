@@ -78,7 +78,7 @@ public class AccountService {
         return new Account(statements.get(0).getAccountNumber(), statements);
     }
 
-    public byte[] exportCSV(List<Statement> statements) {
+    public byte[] exportCSV(Account account) {
 
         try {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -86,7 +86,7 @@ public class AccountService {
 
             writer.writeNext(new String[] {"Account Number", "Date", "Beneficiary", "Description", "Amount", "Currency", "Type"});
 
-            for (Statement s : statements) {
+            for (Statement s : account.getStatements()) {
                 writer.writeNext(new String[] {
                         s.getAccountNumber(),
                         s.getDate().toString(),

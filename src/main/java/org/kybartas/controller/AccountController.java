@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -51,13 +53,22 @@ public class AccountController {
     @GetMapping("/export")
     public ResponseEntity<byte[]> exportCSV() {
 
-        byte[] csvData = accountService.exportCSV(getAllStatements());
+        ByteArrayOutputStream accountsStreamCSV  = new ByteArrayOutputStream();
+
+        try {
+            for (Account account : accounts) {
+                byte[] csvData = accountService.exportCSV(account);
+                accountsStreamCSV.write(csvData);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to write CSV data", e);
+        }
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=statements.csv");
         headers.add(HttpHeaders.CONTENT_TYPE, "text/csv");
 
-        return new ResponseEntity<>(csvData, headers, HttpStatus.OK);
+        return new ResponseEntity<>(accountsStreamCSV.toByteArray(), headers, HttpStatus.OK);
     }
 
     @GetMapping("/filter")
