@@ -112,4 +112,44 @@ public class AccountService {
                 .collect(Collectors.toList());
     }
 
+    public BigDecimal getBalance(Account account) {
+
+        List<Statement> tempStatements = account.getStatements();
+
+        BigDecimal balance = BigDecimal.ZERO;
+
+        for (Statement statement : tempStatements) {
+
+            if ("K".equals(statement.getType())) {
+                balance = balance.add(statement.getAmount());
+            } else if ("D".equals(statement.getType())) {
+                balance = balance.subtract(statement.getAmount());
+            }
+        }
+
+        return balance;
+    }
+
+    public BigDecimal getBalance(Account account, LocalDate from, LocalDate to) {
+
+        List<Statement> tempStatements = account.getStatements();
+
+        if (from != null && to != null) {
+            tempStatements = filterByDateRange(tempStatements, from, to);
+        }
+
+        BigDecimal balance = BigDecimal.ZERO;
+
+        for (Statement statement : tempStatements) {
+
+            if ("K".equals(statement.getType())) {
+                balance = balance.add(statement.getAmount());
+            } else if ("D".equals(statement.getType())) {
+                balance = balance.subtract(statement.getAmount());
+            }
+        }
+
+        return balance;
+    }
+
 }

@@ -88,14 +88,12 @@ public class AccountController {
 
         Account selectedAccount = findAccountByNumber(accountNumber);
 
-        List<Statement> accountStatements = selectedAccount.getStatements();
-
         if(from == null && to == null) {
-            BigDecimal balance = selectedAccount.getBalance();
+            BigDecimal balance = accountService.getBalance(selectedAccount);
             return new ResponseEntity<>(balance, HttpStatus.OK);
         }
 
-        BigDecimal balance = selectedAccount.getBalance(from, to);
+        BigDecimal balance = accountService.getBalance(selectedAccount, from, to);
         return new ResponseEntity<>(balance, HttpStatus.OK);
     }
 
