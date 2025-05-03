@@ -71,15 +71,6 @@ public class AccountController {
         return new ResponseEntity<>(accountsStreamCSV.toByteArray(), headers, HttpStatus.OK);
     }
 
-    @GetMapping("/filter")
-    public ResponseEntity<List<Statement>> filterCSV(
-            @RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
-            @RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
-
-        List<Statement> filtered = accountService.filterStatementsByDateRange(getAllStatements(), from, to);
-        return new ResponseEntity<>(filtered, HttpStatus.OK);
-    }
-
     @GetMapping("/getBalance")
     public ResponseEntity<BigDecimal> getBalance(
             @RequestParam("accountNumber") String accountNumber,
