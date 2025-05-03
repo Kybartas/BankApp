@@ -76,7 +76,7 @@ public class AccountController {
             @RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
 
-        List<Statement> filtered = accountService.filterByDateRange(getAllStatements(), from, to);
+        List<Statement> filtered = accountService.filterStatementsByDateRange(getAllStatements(), from, to);
         return new ResponseEntity<>(filtered, HttpStatus.OK);
     }
 

@@ -106,7 +106,7 @@ public class AccountService {
         }
     }
 
-    public  List<Statement> filterByDateRange(List<Statement> statements, LocalDate from, LocalDate to) {
+    public  List<Statement> filterStatementsByDateRange(List<Statement> statements, LocalDate from, LocalDate to) {
         return statements.stream()
                 .filter(s -> !s.getDate().isBefore(from) && !s.getDate().isAfter(to))
                 .collect(Collectors.toList());
@@ -135,7 +135,7 @@ public class AccountService {
         List<Statement> tempStatements = account.getStatements();
 
         if (from != null && to != null) {
-            tempStatements = filterByDateRange(tempStatements, from, to);
+            tempStatements = filterStatementsByDateRange(tempStatements, from, to);
         }
 
         BigDecimal balance = BigDecimal.ZERO;
