@@ -106,6 +106,36 @@ public class AccountService {
         }
     }
 
+    public byte[] exportCSV(Account account, LocalDate from, LocalDate to) {
+
+        try {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            CSVWriter writer = new CSVWriter(new OutputStreamWriter(out));
+
+            writer.writeNext(new String[] {"Account Number", "Date", "Beneficiary", "Description", "Amount", "Currency", "Type"});
+
+            List<Statement> filteredStatements = filterStatementsByDateRange(account.getStatements(), from, to);
+
+            for (Statement s : filteredStatements) {
+                writer.writeNext(new String[]{
+                        s.getAccountNumber(),
+                        s.getDate().toString(),
+                        s.getBeneficiary(),
+                        s.getDescription(),
+                        s.getAmount().toString(),
+                        s.getCurrency(),
+                        s.getType()
+                });
+            }
+
+            writer.close();
+            return out.toByteArray();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to export CSV", e);
+        }
+    }
+
     public  List<Statement> filterStatementsByDateRange(List<Statement> statements, LocalDate from, LocalDate to) {
         return statements.stream()
                 .filter(s -> !s.getDate().isBefore(from) && !s.getDate().isAfter(to))

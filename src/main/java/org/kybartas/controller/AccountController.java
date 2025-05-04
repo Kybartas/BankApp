@@ -51,14 +51,21 @@ public class AccountController {
     }
 
     @GetMapping("/export")
-    public ResponseEntity<byte[]> exportCSV() {
+    public ResponseEntity<byte[]> exportCSV(
+            @RequestParam(value = "from", required = false) LocalDate from,
+            @RequestParam(value = "to", required = false) LocalDate to) {
 
         ByteArrayOutputStream accountsStreamCSV  = new ByteArrayOutputStream();
 
         try {
             for (Account account : accounts) {
-                byte[] csvData = accountService.exportCSV(account);
-                accountsStreamCSV.write(csvData);
+                if(from != null && to != null) {
+                    byte[] csvData = accountService.exportCSV(account, from, to);
+                    accountsStreamCSV.write(csvData);
+                } else if (from == null && to == null){
+                    byte[] csvData = accountService.exportCSV(account);
+                    accountsStreamCSV.write(csvData);
+                }
             }
         } catch (Exception e) {
             throw new RuntimeException("Failed to write CSV data", e);
