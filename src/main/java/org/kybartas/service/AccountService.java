@@ -77,7 +77,7 @@ public class AccountService {
         if (from != null && to != null) {
             tempStatements = filterStatementsByDateRange(tempStatements, from, to);
         }
-        
+
         try {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             CSVWriter writer = new CSVWriter(new OutputStreamWriter(out));
