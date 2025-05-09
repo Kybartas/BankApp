@@ -166,4 +166,17 @@ public class AccountService {
 
         return balance;
     }
+
+    /**
+     * Finds Account object in an Account list by account number.
+     * @param accountNumber number of account to find
+     * @return Account object with matching account number or null if not found.
+     */
+    public Account findAccountByNumber(List<Account> accounts, String accountNumber) {
+
+        return accounts.stream()
+                .filter(a -> a.getAccountNumber().equals(accountNumber))
+                .findFirst()
+                .orElse(null);
+    }
 }

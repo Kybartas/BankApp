@@ -106,7 +106,7 @@ public class AccountController {
             @RequestParam(value = "from", required = false) LocalDate from,
             @RequestParam(value = "to", required = false) LocalDate to) {
 
-        Account selectedAccount = findAccountByNumber(accountNumber);
+        Account selectedAccount = accountService.findAccountByNumber(accounts, accountNumber);
         if (selectedAccount == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Account not found");
         }
@@ -119,18 +119,5 @@ public class AccountController {
 
         BigDecimal balance = accountService.getBalance(selectedAccount);
         return ResponseEntity.ok(balance);
-    }
-
-    /**
-     * Finds Account object in local Account list by account number.
-     * @param accountNumber number of account to find
-     * @return Account object with given account number or null if not found.
-     */
-    private Account findAccountByNumber(String accountNumber) {
-
-        return accounts.stream()
-                .filter(a -> a.getAccountNumber().equals(accountNumber))
-                .findFirst()
-                .orElse(null);
     }
 }
