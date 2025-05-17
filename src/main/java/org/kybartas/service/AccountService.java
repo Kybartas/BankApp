@@ -1,9 +1,12 @@
 package org.kybartas.service;
 
 import com.opencsv.CSVWriter;
+import jakarta.transaction.Transactional;
 import org.kybartas.entity.Account;
 import org.kybartas.entity.Statement;
+import org.kybartas.repository.StatementRepository;
 import org.kybartas.util.CSVUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -17,16 +20,26 @@ import java.util.stream.Collectors;
 @Service
 public class AccountService {
 
+    private final StatementRepository statementRepository;
+
+    @Autowired
+    public AccountService(StatementRepository statementRepository) {
+        this.statementRepository = statementRepository;
+    }
+
     /**
      * Fills Account object with information from a CSV statements file
      * @param filePath path of CSV file
      * @return new Account object filled with information form CSV file
      * @throws Exception in case CSVReader fails
      */
+    @Transactional
     public Account importCSV (Path filePath) throws Exception {
         List<String[]> rawCSVData = CSVUtil.readRawCSV(filePath);
         List<String[]> filteredData = CSVUtil.filterSwedTable(rawCSVData);
         List<Statement> statements = CSVUtil.convertToStatements(filteredData);
+
+        statementRepository.saveAll(statements);
         return new Account(statements.get(0).getAccountNumber(), statements);
     }
 

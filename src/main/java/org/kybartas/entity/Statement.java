@@ -1,15 +1,30 @@
 package org.kybartas.entity;
 
+import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+@Entity
+@Table(name = "statements")
 public class Statement {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+    @Column(name = "account_number", nullable = false)
     private String accountNumber;
+    @Column(name = "date", nullable = false)
     private LocalDate date;
+    @Column(name = "beneficiary", nullable = false)
     private String beneficiary;
+    @Column(name = "description", nullable = false)
     private String description;
+    @Column(name = "amount", nullable = false)
     private BigDecimal amount;
+    @Column(name = "currency", nullable = false)
     private String currency;
+    @Column(name = "type", nullable = false)
     private String type;
 
     public Statement() {}
@@ -28,6 +43,10 @@ public class Statement {
 
     public void printStatement() {
         System.out.println(accountNumber + " " + date.toString() + " " + beneficiary + " " + description + " " + amount.toString() + " " + currency + " " + type);
+    }
+
+    public long getId() {
+        return id;
     }
 
     public String getAccountNumber() {
