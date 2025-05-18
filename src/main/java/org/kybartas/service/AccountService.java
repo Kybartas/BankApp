@@ -1,12 +1,10 @@
 package org.kybartas.service;
 
 import com.opencsv.CSVWriter;
-import jakarta.transaction.Transactional;
+import org.jdbi.v3.core.Jdbi;
 import org.kybartas.entity.Account;
 import org.kybartas.entity.Statement;
-import org.kybartas.repository.StatementRepository;
 import org.kybartas.util.CSVUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -20,26 +18,36 @@ import java.util.stream.Collectors;
 @Service
 public class AccountService {
 
-    private final StatementRepository statementRepository;
-
-    @Autowired
-    public AccountService(StatementRepository statementRepository) {
-        this.statementRepository = statementRepository;
-    }
-
     /**
      * Fills Account object with information from a CSV statements file
      * @param filePath path of CSV file
      * @return new Account object filled with information form CSV file
      * @throws Exception in case CSVReader fails
      */
-    @Transactional
     public Account importCSV (Path filePath) throws Exception {
         List<String[]> rawCSVData = CSVUtil.readRawCSV(filePath);
         List<String[]> filteredData = CSVUtil.filterSwedTable(rawCSVData);
         List<Statement> statements = CSVUtil.convertToStatements(filteredData);
 
-        statementRepository.saveAll(statements);
+        Jdbi jdbi = Jdbi.create("jdbc:postgresql://db:5432/statement_db", "kristis", "kristis");
+
+        List<Statement> dbStatements = jdbi.withHandle(handle -> {
+            handle.execute("CREATE TABLE IF NOT EXISTS statements (account_number VARCHAR)");
+
+            for(Statement statement : statements) {
+                handle.createUpdate("INSERT INTO statements (account_number) VALUES (:accountNumber)")
+                        .bind("accountNumber", statement.getAccountNumber())
+                        .execute();
+            }
+
+            return handle.createQuery("SELECT * FROM statements")
+                    .mapToBean(Statement.class)
+                    .list();
+        });
+
+        System.out.println("Result of jdbi query:");
+        dbStatements.forEach(statement -> System.out.println(statement.getAccountNumber()));
+
         return new Account(statements.get(0).getAccountNumber(), statements);
     }
 
