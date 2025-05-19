@@ -15,6 +15,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.kybartas.util.JDBIUtil.CreateTablesIfMissing;
+import static org.kybartas.util.JDBIUtil.ImportAccount;
+
 @Service
 public class AccountService {
 
@@ -29,26 +32,13 @@ public class AccountService {
         List<String[]> filteredData = CSVUtil.filterSwedTable(rawCSVData);
         List<Statement> statements = CSVUtil.convertToStatements(filteredData);
 
-        Jdbi jdbi = Jdbi.create("jdbc:postgresql://db:5432/statement_db", "kristis", "kristis");
+        CreateTablesIfMissing();
 
-        List<Statement> dbStatements = jdbi.withHandle(handle -> {
-            handle.execute("CREATE TABLE IF NOT EXISTS statements (account_number VARCHAR)");
+        Account newAccount = new Account(statements.get(0).getAccountNumber(), statements);
 
-            for(Statement statement : statements) {
-                handle.createUpdate("INSERT INTO statements (account_number) VALUES (:accountNumber)")
-                        .bind("accountNumber", statement.getAccountNumber())
-                        .execute();
-            }
+        ImportAccount(newAccount);
 
-            return handle.createQuery("SELECT * FROM statements")
-                    .mapToBean(Statement.class)
-                    .list();
-        });
-
-        System.out.println("Result of jdbi query:");
-        dbStatements.forEach(statement -> System.out.println(statement.getAccountNumber()));
-
-        return new Account(statements.get(0).getAccountNumber(), statements);
+        return newAccount;
     }
 
     /**
