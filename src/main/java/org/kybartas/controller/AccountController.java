@@ -71,11 +71,8 @@ public class AccountController {
         try {
             byte[] csvData;
 
-            if (from != null && to != null) {
-                csvData = accountService.exportCSV(accountNumber, from, to);
-            } else {
-                csvData = accountService.exportCSV(accountNumber);
-            }
+            csvData = accountService.exportCSV(accountNumber, from, to);
+
             accountsStreamCSV.write(csvData);
 
         } catch (Exception e) {

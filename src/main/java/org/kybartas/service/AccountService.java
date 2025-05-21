@@ -38,41 +38,6 @@ public class AccountService {
     /**
      * Generates a CSV bank statement for Account
      * @param accountNumber account to get statements of
-     * @return byte array containing CSV statement data
-     */
-    public byte[] exportCSV(String accountNumber) {
-
-        Account account = DBUtil.getAccount(accountNumber);
-
-        try {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            CSVWriter writer = new CSVWriter(new OutputStreamWriter(out));
-
-            writer.writeNext(new String[] {"Account Number", "Date", "Beneficiary", "Description", "Amount", "Currency", "Type"});
-
-            for (Statement s : account.getStatements()) {
-                writer.writeNext(new String[] {
-                        s.getAccountNumber(),
-                        s.getDate().toString(),
-                        s.getBeneficiary(),
-                        s.getDescription(),
-                        s.getAmount().toString(),
-                        s.getCurrency(),
-                        s.getType()
-                });
-            }
-
-            writer.close();
-            return out.toByteArray();
-
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to export CSV", e);
-        }
-    }
-
-    /**
-     * Generates a CSV bank statement for Account for given date range
-     * @param accountNumber account to get statements of
      * @param from start date
      * @param to end date
      * @return byte array containing CSV statement data
@@ -86,30 +51,7 @@ public class AccountService {
             tempStatements = filterStatementsByDateRange(tempStatements, from, to);
         }
 
-        try {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            CSVWriter writer = new CSVWriter(new OutputStreamWriter(out));
-
-            writer.writeNext(new String[] {"Account Number", "Date", "Beneficiary", "Description", "Amount", "Currency", "Type"});
-
-            for (Statement s : tempStatements) {
-                writer.writeNext(new String[]{
-                        s.getAccountNumber(),
-                        s.getDate().toString(),
-                        s.getBeneficiary(),
-                        s.getDescription(),
-                        s.getAmount().toString(),
-                        s.getCurrency(),
-                        s.getType()
-                });
-            }
-
-            writer.close();
-            return out.toByteArray();
-
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to export CSV", e);
-        }
+        return CSVUtil.writeStatements(tempStatements);
     }
 
     /**

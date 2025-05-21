@@ -1,8 +1,11 @@
 package org.kybartas.util;
 
 import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
 import org.kybartas.entity.Statement;
 
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.nio.file.Files;
@@ -64,6 +67,7 @@ public class CSVUtil {
      * @return list of statements filled from given data
      */
     public static List<Statement> convertToStatements(List<String[]> filteredData) {
+
         List<Statement> statements = new ArrayList<>();
 
         for (String[] row : filteredData) {
@@ -79,5 +83,33 @@ public class CSVUtil {
         }
 
         return statements;
+    }
+
+    public static byte[] writeStatements(List<Statement> statements){
+
+        try {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            CSVWriter writer = new CSVWriter(new OutputStreamWriter(out));
+
+            writer.writeNext(new String[] {"Account Number", "Date", "Beneficiary", "Description", "Amount", "Currency", "Type"});
+
+            for (Statement s : statements) {
+                writer.writeNext(new String[]{
+                        s.getAccountNumber(),
+                        s.getDate().toString(),
+                        s.getBeneficiary(),
+                        s.getDescription(),
+                        s.getAmount().toString(),
+                        s.getCurrency(),
+                        s.getType()
+                });
+            }
+
+            writer.close();
+            return out.toByteArray();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to export CSV", e);
+        }
     }
 }
