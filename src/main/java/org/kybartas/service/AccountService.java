@@ -23,10 +23,9 @@ public class AccountService {
     /**
      * Fills Account object with information from a CSV statements file
      * @param filePath path of CSV file
-     * @return new Account object filled with information form CSV file
      * @throws Exception in case CSVReader fails
      */
-    public Account importCSV (Path filePath) throws Exception {
+    public void importCSV (Path filePath) throws Exception {
         List<String[]> rawCSVData = CSVUtil.readRawCSV(filePath);
         List<String[]> filteredData = CSVUtil.filterSwedTable(rawCSVData);
         List<Statement> statements = CSVUtil.convertToStatements(filteredData);
@@ -36,16 +35,16 @@ public class AccountService {
         Account newAccount = new Account(statements.get(0).getAccountNumber(), statements);
 
         ImportAccount(newAccount);
-
-        return newAccount;
     }
 
     /**
      * Generates a CSV bank statement for Account
-     * @param account Account object for statement generation
+     * @param accountNumber account to get statements of
      * @return byte array containing CSV statement data
      */
-    public byte[] exportCSV(Account account) {
+    public byte[] exportCSV(String accountNumber) {
+
+        Account account = getAccount(accountNumber);
 
         try {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -75,13 +74,14 @@ public class AccountService {
 
     /**
      * Generates a CSV bank statement for Account for given date range
-     * @param account Account object for statement generation
+     * @param accountNumber account to get statements of
      * @param from start date
      * @param to end date
      * @return byte array containing CSV statement data
      */
-    public byte[] exportCSV(Account account, LocalDate from, LocalDate to) {
+    public byte[] exportCSV(String accountNumber, LocalDate from, LocalDate to) {
 
+        Account account = getAccount(accountNumber);
         List<Statement> tempStatements = account.getStatements();
 
         if (from != null && to != null) {

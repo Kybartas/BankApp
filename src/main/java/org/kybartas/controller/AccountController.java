@@ -25,7 +25,6 @@ import java.util.List;
 public class AccountController {
 
     private final AccountService accountService;
-    private final List<Account> accounts = new ArrayList<>();
 
     @Autowired
     public AccountController(AccountService accountService) {
@@ -45,8 +44,7 @@ public class AccountController {
             Path tempFile = Files.createTempFile("upload", ".csv");
             file.transferTo(tempFile.toFile());
 
-            Account newAccount = accountService.importCSV(tempFile);
-            accounts.add(newAccount);
+            accountService.importCSV(tempFile);
             Files.delete(tempFile);
 
             return ResponseEntity.ok("Account import success");
@@ -56,13 +54,14 @@ public class AccountController {
     }
 
     /**
-     * Exports all stored accounts to CSV file, optional date range filtering.
+     * Exports Account statements to CSV file, optional date range filtering.
      * @param from optional start date for filtering
      * @param to optional end date for filtering
      * @return HTTP response containing CSV data for all accounts or error message
      */
     @GetMapping("/export")
     public ResponseEntity<?> exportCSV(
+            @RequestParam("accountNumber") String accountNumber,
             @RequestParam(value = "from", required = false) LocalDate from,
             @RequestParam(value = "to", required = false) LocalDate to) {
 
@@ -72,14 +71,12 @@ public class AccountController {
         try {
             byte[] csvData;
 
-            for (Account account : accounts) {
-                if (from != null && to != null) {
-                    csvData = accountService.exportCSV(account, from, to);
-                } else {
-                    csvData = accountService.exportCSV(account);
-                }
-                accountsStreamCSV.write(csvData);
+            if (from != null && to != null) {
+                csvData = accountService.exportCSV(accountNumber, from, to);
+            } else {
+                csvData = accountService.exportCSV(accountNumber);
             }
+            accountsStreamCSV.write(csvData);
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
