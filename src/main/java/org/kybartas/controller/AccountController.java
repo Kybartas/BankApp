@@ -41,12 +41,7 @@ public class AccountController {
             @RequestParam("file") MultipartFile file) {
 
         try {
-            Path tempFile = Files.createTempFile("upload", ".csv");
-            file.transferTo(tempFile.toFile());
-
-            accountService.importCSV(tempFile);
-            Files.delete(tempFile);
-
+            accountService.importCSV(file);
             return ResponseEntity.ok("Account import success");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Account import error : " + e.getMessage());
@@ -65,26 +60,18 @@ public class AccountController {
             @RequestParam(value = "from", required = false) LocalDate from,
             @RequestParam(value = "to", required = false) LocalDate to) {
 
-        ByteArrayOutputStream accountsStreamCSV  = new ByteArrayOutputStream();
-
-        // Try writing data to accountStreamCSV checking for optional date range
         try {
-            byte[] csvData;
+            byte[] csvData = accountService.exportCSV(accountNumber, from, to);
 
-            csvData = accountService.exportCSV(accountNumber, from, to);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=statements.csv");
+            headers.add(HttpHeaders.CONTENT_TYPE, "text/csv");
 
-            accountsStreamCSV.write(csvData);
-
+            return ResponseEntity.ok().headers(headers).body(csvData);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Account export error : " + e.getMessage());
         }
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=statements.csv");
-        headers.add(HttpHeaders.CONTENT_TYPE, "text/csv");
-
-        return ResponseEntity.ok().headers(headers).body(accountsStreamCSV.toByteArray());
     }
 
     /**

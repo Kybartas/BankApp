@@ -5,8 +5,11 @@ import org.kybartas.entity.Statement;
 import org.kybartas.util.CSVUtil;
 import org.kybartas.util.DBUtil;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.List;
@@ -20,15 +23,18 @@ public class AccountService {
      * @param filePath path of CSV file
      * @throws Exception in case CSVReader fails
      */
-    public void importCSV (Path filePath) throws Exception {
-        List<String[]> rawCSVData = CSVUtil.readRawCSV(filePath);
+    public void importCSV (MultipartFile file) throws Exception {
+
+        Path tempFile = Files.createTempFile("upload", ".csv");
+        file.transferTo(tempFile.toFile());
+
+        List<String[]> rawCSVData = CSVUtil.readRawCSV(tempFile);
         List<String[]> filteredData = CSVUtil.filterSwedTable(rawCSVData);
         List<Statement> statements = CSVUtil.convertToStatements(filteredData);
+        Files.delete(tempFile);
 
         DBUtil.CreateTablesIfMissing();
-
         Account newAccount = new Account(statements.get(0).getAccountNumber(), statements);
-
         DBUtil.ImportAccount(newAccount);
     }
 
@@ -39,7 +45,7 @@ public class AccountService {
      * @param to end date or null
      * @return byte array containing CSV statement data
      */
-    public byte[] exportCSV(String accountNumber, LocalDate from, LocalDate to) {
+    public byte[] exportCSV(String accountNumber, LocalDate from, LocalDate to) throws Exception {
 
         Account account = DBUtil.getAccount(accountNumber);
         List<Statement> tempStatements = account.getStatements();
