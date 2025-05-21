@@ -6,7 +6,7 @@ import org.kybartas.entity.Statement;
 
 import java.util.List;
 
-public class JDBIUtil {
+public class DBUtil {
 
     public static void CreateTablesIfMissing () {
 

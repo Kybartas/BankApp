@@ -1,10 +1,10 @@
 package org.kybartas.service;
 
 import com.opencsv.CSVWriter;
-import org.jdbi.v3.core.Jdbi;
 import org.kybartas.entity.Account;
 import org.kybartas.entity.Statement;
 import org.kybartas.util.CSVUtil;
+import org.kybartas.util.DBUtil;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -14,8 +14,6 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static org.kybartas.util.JDBIUtil.*;
 
 @Service
 public class AccountService {
@@ -30,11 +28,11 @@ public class AccountService {
         List<String[]> filteredData = CSVUtil.filterSwedTable(rawCSVData);
         List<Statement> statements = CSVUtil.convertToStatements(filteredData);
 
-        CreateTablesIfMissing();
+        DBUtil.CreateTablesIfMissing();
 
         Account newAccount = new Account(statements.get(0).getAccountNumber(), statements);
 
-        ImportAccount(newAccount);
+        DBUtil.ImportAccount(newAccount);
     }
 
     /**
@@ -44,7 +42,7 @@ public class AccountService {
      */
     public byte[] exportCSV(String accountNumber) {
 
-        Account account = getAccount(accountNumber);
+        Account account = DBUtil.getAccount(accountNumber);
 
         try {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -81,7 +79,7 @@ public class AccountService {
      */
     public byte[] exportCSV(String accountNumber, LocalDate from, LocalDate to) {
 
-        Account account = getAccount(accountNumber);
+        Account account = DBUtil.getAccount(accountNumber);
         List<Statement> tempStatements = account.getStatements();
 
         if (from != null && to != null) {
@@ -133,8 +131,9 @@ public class AccountService {
      * @param account account to calculate balance of
      * @return balance of account
      */
-    public BigDecimal getBalance(Account account) {
+    public BigDecimal getBalance(String accountNumber) {
 
+        Account account = DBUtil.getAccount(accountNumber);
         List<Statement> tempStatements = account.getStatements();
 
         BigDecimal balance = BigDecimal.ZERO;
@@ -155,8 +154,9 @@ public class AccountService {
      * @param account account to calculate balance of
      * @return balance of account for date range
      */
-    public BigDecimal getBalance(Account account, LocalDate from, LocalDate to) {
+    public BigDecimal getBalance(String accountNumber, LocalDate from, LocalDate to) {
 
+        Account account = DBUtil.getAccount(accountNumber);
         List<Statement> tempStatements = account.getStatements();
 
         if (from != null && to != null) {
@@ -175,10 +175,5 @@ public class AccountService {
         }
 
         return balance;
-    }
-
-    public Account findAccountByNumber(String accountNumber) {
-
-        return getAccount(accountNumber);
     }
 }

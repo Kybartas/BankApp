@@ -103,18 +103,13 @@ public class AccountController {
             @RequestParam(value = "from", required = false) LocalDate from,
             @RequestParam(value = "to", required = false) LocalDate to) {
 
-        Account selectedAccount = accountService.findAccountByNumber(accountNumber);
-        if (selectedAccount == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Account not found");
-        }
-
         // Check for optional date range input.
         if (from != null && to != null) {
-            BigDecimal balance = accountService.getBalance(selectedAccount, from, to);
+            BigDecimal balance = accountService.getBalance(accountNumber, from, to);
             return ResponseEntity.ok(balance);
         }
 
-        BigDecimal balance = accountService.getBalance(selectedAccount);
+        BigDecimal balance = accountService.getBalance(accountNumber);
         return ResponseEntity.ok(balance);
     }
 }
