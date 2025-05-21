@@ -15,8 +15,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.kybartas.util.JDBIUtil.CreateTablesIfMissing;
-import static org.kybartas.util.JDBIUtil.ImportAccount;
+import static org.kybartas.util.JDBIUtil.*;
 
 @Service
 public class AccountService {
@@ -178,16 +177,8 @@ public class AccountService {
         return balance;
     }
 
-    /**
-     * Finds Account object in an Account list by account number.
-     * @param accountNumber number of account to find
-     * @return Account object with matching account number or null if not found.
-     */
-    public Account findAccountByNumber(List<Account> accounts, String accountNumber) {
+    public Account findAccountByNumber(String accountNumber) {
 
-        return accounts.stream()
-                .filter(a -> a.getAccountNumber().equals(accountNumber))
-                .findFirst()
-                .orElse(null);
+        return getAccount(accountNumber);
     }
 }

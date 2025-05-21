@@ -106,7 +106,7 @@ public class AccountController {
             @RequestParam(value = "from", required = false) LocalDate from,
             @RequestParam(value = "to", required = false) LocalDate to) {
 
-        Account selectedAccount = accountService.findAccountByNumber(accounts, accountNumber);
+        Account selectedAccount = accountService.findAccountByNumber(accountNumber);
         if (selectedAccount == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Account not found");
         }

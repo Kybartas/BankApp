@@ -8,7 +8,7 @@ import java.util.List;
 
 public class JDBIUtil {
 
-    public static void CreateTablesIfMissing() {
+    public static void CreateTablesIfMissing () {
 
         Jdbi jdbi = Jdbi.create("jdbc:postgresql://db:5432/statement_db", "kristis", "kristis");
 
@@ -73,5 +73,18 @@ public class JDBIUtil {
         }catch (Exception e) {
             throw new RuntimeException("Account import to db failed", e);
         }
+    }
+
+    public static Account getAccount(String accountNumber) {
+
+        Jdbi jdbi = Jdbi.create("jdbc:postgresql://db:5432/statement_db", "kristis", "kristis");
+
+        return jdbi.withHandle(handle -> {
+           return handle.createQuery("SELECT * FROM accounts WHERE account_number = :accountNumber")
+                   .bind("accountNumber", accountNumber)
+                   .map(new AccountMapper(handle))
+                   .findOne()
+                   .orElse(null);
+        });
     }
 }
