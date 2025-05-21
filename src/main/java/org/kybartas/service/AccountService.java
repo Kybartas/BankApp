@@ -1,14 +1,11 @@
 package org.kybartas.service;
 
-import com.opencsv.CSVWriter;
 import org.kybartas.entity.Account;
 import org.kybartas.entity.Statement;
 import org.kybartas.util.CSVUtil;
 import org.kybartas.util.DBUtil;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStreamWriter;
 import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.time.LocalDate;
@@ -36,10 +33,10 @@ public class AccountService {
     }
 
     /**
-     * Generates a CSV bank statement for Account
+     * Generates a CSV bank statement for Account. Optional date range
      * @param accountNumber account to get statements of
-     * @param from start date
-     * @param to end date
+     * @param from start date or null
+     * @param to end date or null
      * @return byte array containing CSV statement data
      */
     public byte[] exportCSV(String accountNumber, LocalDate from, LocalDate to) {
@@ -69,32 +66,11 @@ public class AccountService {
     }
 
     /**
-     * Calculates balance of account by checking if transactions were K (credit) or D (debit).
-     * @param account account to calculate balance of
+     * Calculates balance of account by checking if transactions were K (credit) or D (debit). Optional date range.
+     * @param accountNumber account to calculate balance of
+     * @param from start date or null
+     * @param to end date or null
      * @return balance of account
-     */
-    public BigDecimal getBalance(String accountNumber) {
-
-        Account account = DBUtil.getAccount(accountNumber);
-        List<Statement> tempStatements = account.getStatements();
-
-        BigDecimal balance = BigDecimal.ZERO;
-
-        for (Statement statement : tempStatements) {
-            if ("K".equals(statement.getType())) {
-                balance = balance.add(statement.getAmount());
-            } else if ("D".equals(statement.getType())) {
-                balance = balance.subtract(statement.getAmount());
-            }
-        }
-
-        return balance;
-    }
-
-    /**
-     * Calculates balance of account within date range by checking if transactions were K (credit) or D (debit).
-     * @param account account to calculate balance of
-     * @return balance of account for date range
      */
     public BigDecimal getBalance(String accountNumber, LocalDate from, LocalDate to) {
 

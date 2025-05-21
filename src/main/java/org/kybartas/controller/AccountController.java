@@ -100,13 +100,7 @@ public class AccountController {
             @RequestParam(value = "from", required = false) LocalDate from,
             @RequestParam(value = "to", required = false) LocalDate to) {
 
-        // Check for optional date range input.
-        if (from != null && to != null) {
-            BigDecimal balance = accountService.getBalance(accountNumber, from, to);
-            return ResponseEntity.ok(balance);
-        }
-
-        BigDecimal balance = accountService.getBalance(accountNumber);
+        BigDecimal balance = accountService.getBalance(accountNumber, from, to);
         return ResponseEntity.ok(balance);
     }
 }
