@@ -5,7 +5,6 @@ import java.time.LocalDate;
 
 public class Statement {
 
-    private long id;
     private String accountNumber;
     private LocalDate date;
     private String beneficiary;
@@ -26,14 +25,6 @@ public class Statement {
         this.amount = amount;
         this.currency = currency;
         this.type = type;
-    }
-
-    public void printStatement() {
-        System.out.println(accountNumber + " " + date.toString() + " " + beneficiary + " " + description + " " + amount.toString() + " " + currency + " " + type);
-    }
-
-    public long getId() {
-        return id;
     }
 
     public String getAccountNumber() {

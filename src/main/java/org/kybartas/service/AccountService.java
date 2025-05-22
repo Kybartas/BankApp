@@ -7,7 +7,6 @@ import org.kybartas.util.DBUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,8 +18,8 @@ import java.util.stream.Collectors;
 public class AccountService {
 
     /**
-     * Fills Account object with information from a CSV statements file
-     * @param filePath path of CSV file
+     * Creates and fills Account object from CSV file
+     * @param file CSV file
      * @throws Exception in case CSVReader fails
      */
     public void importCSV (MultipartFile file) throws Exception {
@@ -58,20 +57,6 @@ public class AccountService {
     }
 
     /**
-     * Modifies given statement List to be within bounds of given date range
-     * @param statements statements to filter
-     * @param from start date
-     * @param to end date
-     * @return modified list of statements
-     */
-    public  List<Statement> filterStatementsByDateRange(List<Statement> statements, LocalDate from, LocalDate to) {
-
-        return statements.stream()
-                .filter(s -> !s.getDate().isBefore(from) && !s.getDate().isAfter(to))
-                .collect(Collectors.toList());
-    }
-
-    /**
      * Calculates balance of account by checking if transactions were K (credit) or D (debit). Optional date range.
      * @param accountNumber account to calculate balance of
      * @param from start date or null
@@ -90,7 +75,6 @@ public class AccountService {
         BigDecimal balance = BigDecimal.ZERO;
 
         for (Statement statement : tempStatements) {
-
             if ("K".equals(statement.getType())) {
                 balance = balance.add(statement.getAmount());
             } else if ("D".equals(statement.getType())) {
@@ -99,5 +83,19 @@ public class AccountService {
         }
 
         return balance;
+    }
+
+    /**
+     * Modifies given statement List to be within bounds of given date range
+     * @param statements statements to filter
+     * @param from start date
+     * @param to end date
+     * @return modified list of statements
+     */
+    public  List<Statement> filterStatementsByDateRange(List<Statement> statements, LocalDate from, LocalDate to) {
+
+        return statements.stream()
+                .filter(s -> !s.getDate().isBefore(from) && !s.getDate().isAfter(to))
+                .collect(Collectors.toList());
     }
 }
