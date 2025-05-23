@@ -12,7 +12,7 @@ Swedbank bank statement samples under /samples directory.
 
 /import
 
-curl --location 'http://localhost:8080/api/statements/import' --form 'file=@"samples/statement2.csv"'
+curl --location 'http://localhost:8080/api/statements/import' --form 'file=@"samples/statement1.csv"'
 
 curl --location 'http://localhost:8080/api/statements/import' --form 'file=@"samples/statement2.csv"'
 

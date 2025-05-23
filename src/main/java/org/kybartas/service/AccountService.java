@@ -2,8 +2,8 @@ package org.kybartas.service;
 
 import org.kybartas.entity.Account;
 import org.kybartas.entity.Statement;
+import org.kybartas.repository.AccountRepository;
 import org.kybartas.util.CSVUtil;
-import org.kybartas.util.DBUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,6 +16,11 @@ import java.util.stream.Collectors;
 
 @Service
 public class AccountService {
+
+    private final AccountRepository accountRepository;
+    public AccountService(AccountRepository accountRepository) {
+        this.accountRepository = accountRepository;
+    }
 
     /**
      * Creates and fills Account object from CSV file
@@ -32,9 +37,9 @@ public class AccountService {
         List<Statement> statements = CSVUtil.convertToStatements(filteredData);
         Files.delete(tempFile);
 
-        DBUtil.CreateTablesIfMissing();
+        accountRepository.CreateTablesIfMissing();
         Account newAccount = new Account(statements.get(0).getAccountNumber(), statements);
-        DBUtil.ImportAccount(newAccount);
+        accountRepository.ImportAccount(newAccount);
     }
 
     /**
@@ -46,7 +51,7 @@ public class AccountService {
      */
     public byte[] exportCSV(String accountNumber, LocalDate from, LocalDate to) throws Exception {
 
-        Account account = DBUtil.getAccount(accountNumber);
+        Account account = accountRepository.getAccount(accountNumber);
         List<Statement> tempStatements = account.getStatements();
 
         if (from != null && to != null) {
@@ -65,7 +70,7 @@ public class AccountService {
      */
     public BigDecimal getBalance(String accountNumber, LocalDate from, LocalDate to) {
 
-        Account account = DBUtil.getAccount(accountNumber);
+        Account account = accountRepository.getAccount(accountNumber);
         List<Statement> tempStatements = account.getStatements();
 
         if (from != null && to != null) {
