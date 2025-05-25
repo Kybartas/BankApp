@@ -90,12 +90,15 @@ public class AccountRepository {
 
         if(from != null && to != null){
             return jdbi.withHandle(handle -> {
-                return handle.createQuery("SELECT SUM(CASE" +
-                                "WHEN type = 'K' THEN amount" +
-                                "WHEN type = 'D' THEN -amount ELSE 0 END)" +
-                                "FROM statements" +
-                                "WHERE account_number = :accountNumber" +
-                                "AND date >= :from AND date <= :to")
+                return handle.createQuery("""
+                                SELECT SUM(
+                                CASE
+                                WHEN type = 'K' THEN amount
+                                WHEN type = 'D' THEN -amount ELSE 0 END)
+                                FROM statements
+                                WHERE account_number = :accountNumber
+                                AND date >= :from AND date <= :to
+                                """)
                         .bind("accountNumber", accountNumber)
                         .bind("from", from)
                         .bind("to", to)
@@ -106,11 +109,14 @@ public class AccountRepository {
         }
 
         return jdbi.withHandle(handle -> {
-            return handle.createQuery("SELECT SUM(CASE" +
-                            "WHEN type = 'K' THEN amount" +
-                            "WHEN type = 'D' THEN -amount ELSE 0 END)" +
-                            "FROM statements" +
-                            "WHERE account_number = :accountNumber ")
+            return handle.createQuery("""
+                                SELECT SUM(
+                                CASE
+                                WHEN type = 'K' THEN amount
+                                WHEN type = 'D' THEN -amount ELSE 0 END)
+                                FROM statements
+                                WHERE account_number = :accountNumber
+                                """)
                     .bind("accountNumber", accountNumber)
                     .mapTo(BigDecimal.class)
                     .findOne()
