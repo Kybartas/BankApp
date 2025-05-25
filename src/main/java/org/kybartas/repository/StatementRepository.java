@@ -10,6 +10,16 @@ import java.util.List;
 
 public interface StatementRepository extends JpaRepository<Statement, Long> {
 
+    @Query("""
+           SELECT s FROM Statement s WHERE s.accountNumber = :accountNumber
+           AND s.date >= :from
+           AND s.date <= :to
+           """)
+    List<Statement> findByAccountNumberAndDateRange(String accountNumber, LocalDate from, LocalDate to);
+
+    @Query("""
+           SELECT s FROM Statement s WHERE s.accountNumber = :accountNumber
+           """)
     List<Statement> findByAccountNumber(String accountNumber);
 
     @Query(value = """

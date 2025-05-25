@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,10 +37,12 @@ public class AccountService {
 
     public byte[] exportCSV(String accountNumber, LocalDate from, LocalDate to) throws Exception {
 
-        List<Statement> statements = statementRepository.findByAccountNumber(accountNumber);
+        List<Statement> statements = new ArrayList<>();
 
         if (from != null && to != null) {
-            statements = filterStatementsByDateRange(statements, from, to);
+            statements = statementRepository.findByAccountNumberAndDateRange(accountNumber, from, to);
+        } else {
+            statements = statementRepository.findByAccountNumber(accountNumber);
         }
 
         return CSVUtil.writeStatements(statements);
@@ -52,12 +55,5 @@ public class AccountService {
         }
 
         return statementRepository.getBalanceAll(accountNumber);
-    }
-
-    public  List<Statement> filterStatementsByDateRange(List<Statement> statements, LocalDate from, LocalDate to) {
-
-        return statements.stream()
-                .filter(s -> !s.getDate().isBefore(from) && !s.getDate().isAfter(to))
-                .collect(Collectors.toList());
     }
 }
