@@ -1,11 +1,21 @@
 package org.kybartas.entity;
 
+import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+@Entity
+@Table(name = "statements")
 public class Statement {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "account_number")
     private String accountNumber;
+
     private LocalDate date;
     private String beneficiary;
     private String description;
@@ -25,6 +35,13 @@ public class Statement {
         this.amount = amount;
         this.currency = currency;
         this.type = type;
+    }
+
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getAccountNumber() {

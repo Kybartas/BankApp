@@ -1,8 +1,7 @@
 package org.kybartas.service;
 
-import org.kybartas.entity.Account;
 import org.kybartas.entity.Statement;
-import org.kybartas.repository.AccountRepository;
+import org.kybartas.repository.StatementRepository;
 import org.kybartas.util.CSVUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,9 +16,9 @@ import java.util.stream.Collectors;
 @Service
 public class AccountService {
 
-    private final AccountRepository accountRepository;
-    public AccountService(AccountRepository accountRepository) {
-        this.accountRepository = accountRepository;
+    private final StatementRepository statementRepository;
+    public AccountService(StatementRepository statementRepository) {
+        this.statementRepository = statementRepository;
     }
 
     public void importCSV (MultipartFile file) throws Exception {
@@ -32,25 +31,27 @@ public class AccountService {
         List<Statement> statements = CSVUtil.convertToStatements(filteredData);
         Files.delete(tempFile);
 
-        accountRepository.CreateTablesIfMissing();
-        Account newAccount = new Account(statements.get(0).getAccountNumber(), statements);
-        accountRepository.ImportAccount(newAccount);
+        statementRepository.saveAll(statements);
     }
 
     public byte[] exportCSV(String accountNumber, LocalDate from, LocalDate to) throws Exception {
 
-        Account account = accountRepository.getAccount(accountNumber);
-        List<Statement> tempStatements = account.getStatements();
+        List<Statement> statements = statementRepository.findByAccountNumber(accountNumber);
 
         if (from != null && to != null) {
-            tempStatements = filterStatementsByDateRange(tempStatements, from, to);
+            statements = filterStatementsByDateRange(statements, from, to);
         }
 
-        return CSVUtil.writeStatements(tempStatements);
+        return CSVUtil.writeStatements(statements);
     }
 
     public BigDecimal getBalance(String accountNumber, LocalDate from, LocalDate to) {
-        return accountRepository.getBalance(accountNumber, from, to);
+
+        if(from != null && to != null) {
+            return statementRepository.getBalanceWithDates(accountNumber, from, to);
+        }
+
+        return statementRepository.getBalanceAll(accountNumber);
     }
 
     public  List<Statement> filterStatementsByDateRange(List<Statement> statements, LocalDate from, LocalDate to) {
