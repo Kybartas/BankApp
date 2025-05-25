@@ -3,9 +3,11 @@ package org.kybartas.repository;
 import org.jdbi.v3.core.Jdbi;
 import org.kybartas.entity.Account;
 import org.kybartas.entity.Statement;
-import org.kybartas.util.AccountMapper;
+import org.kybartas.repository.mapper.AccountMapper;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -84,4 +86,35 @@ public class AccountRepository {
         });
     }
 
+    public BigDecimal getBalance(String accountNumber, LocalDate from, LocalDate to) {
+
+        if(from != null && to != null){
+            return jdbi.withHandle(handle -> {
+                return handle.createQuery("SELECT SUM(CASE" +
+                                "WHEN type = 'K' THEN amount" +
+                                "WHEN type = 'D' THEN -amount ELSE 0 END)" +
+                                "FROM statements" +
+                                "WHERE account_number = :accountNumber" +
+                                "AND date >= :from AND date <= :to")
+                        .bind("accountNumber", accountNumber)
+                        .bind("from", from)
+                        .bind("to", to)
+                        .mapTo(BigDecimal.class)
+                        .findOne()
+                        .orElse(null);
+            });
+        }
+
+        return jdbi.withHandle(handle -> {
+            return handle.createQuery("SELECT SUM(CASE" +
+                            "WHEN type = 'K' THEN amount" +
+                            "WHEN type = 'D' THEN -amount ELSE 0 END)" +
+                            "FROM statements" +
+                            "WHERE account_number = :accountNumber ")
+                    .bind("accountNumber", accountNumber)
+                    .mapTo(BigDecimal.class)
+                    .findOne()
+                    .orElse(null);
+        });
+    }
 }

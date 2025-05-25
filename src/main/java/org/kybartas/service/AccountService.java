@@ -22,11 +22,6 @@ public class AccountService {
         this.accountRepository = accountRepository;
     }
 
-    /**
-     * Creates and fills Account object from CSV file
-     * @param file CSV file
-     * @throws Exception in case CSVReader fails
-     */
     public void importCSV (MultipartFile file) throws Exception {
 
         Path tempFile = Files.createTempFile("upload", ".csv");
@@ -42,13 +37,6 @@ public class AccountService {
         accountRepository.ImportAccount(newAccount);
     }
 
-    /**
-     * Generates a CSV bank statement for Account. Optional date range
-     * @param accountNumber account to get statements of
-     * @param from start date or null
-     * @param to end date or null
-     * @return byte array containing CSV statement data
-     */
     public byte[] exportCSV(String accountNumber, LocalDate from, LocalDate to) throws Exception {
 
         Account account = accountRepository.getAccount(accountNumber);
@@ -61,42 +49,10 @@ public class AccountService {
         return CSVUtil.writeStatements(tempStatements);
     }
 
-    /**
-     * Calculates balance of account by checking if transactions were K (credit) or D (debit). Optional date range.
-     * @param accountNumber account to calculate balance of
-     * @param from start date or null
-     * @param to end date or null
-     * @return balance of account
-     */
     public BigDecimal getBalance(String accountNumber, LocalDate from, LocalDate to) {
-
-        Account account = accountRepository.getAccount(accountNumber);
-        List<Statement> tempStatements = account.getStatements();
-
-        if (from != null && to != null) {
-            tempStatements = filterStatementsByDateRange(tempStatements, from, to);
-        }
-
-        BigDecimal balance = BigDecimal.ZERO;
-
-        for (Statement statement : tempStatements) {
-            if ("K".equals(statement.getType())) {
-                balance = balance.add(statement.getAmount());
-            } else if ("D".equals(statement.getType())) {
-                balance = balance.subtract(statement.getAmount());
-            }
-        }
-
-        return balance;
+        return accountRepository.getBalance(accountNumber, from, to);
     }
 
-    /**
-     * Modifies given statement List to be within bounds of given date range
-     * @param statements statements to filter
-     * @param from start date
-     * @param to end date
-     * @return modified list of statements
-     */
     public  List<Statement> filterStatementsByDateRange(List<Statement> statements, LocalDate from, LocalDate to) {
 
         return statements.stream()

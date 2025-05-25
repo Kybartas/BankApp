@@ -1,7 +1,6 @@
 package org.kybartas.controller;
 
 import org.kybartas.service.AccountService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,9 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-/**
- * REST controller for handling bank account and statement operations
- */
 @RestController
 @RequestMapping("/api/statements")
 public class AccountController {
@@ -23,11 +19,6 @@ public class AccountController {
         this.accountService = accountService;
     }
 
-    /**
-     * Imports bank statement from CSV file and stores as Account object
-     * @param file location of CSV file
-     * @return success or error message
-     */
     @PostMapping("/import")
     public ResponseEntity<String> uploadCSV(
             @RequestParam("file") MultipartFile file) {
@@ -40,12 +31,6 @@ public class AccountController {
         }
     }
 
-    /**
-     * Exports Account statements to CSV file, optional date range filtering.
-     * @param from optional start date for filtering
-     * @param to optional end date for filtering
-     * @return HTTP response containing CSV data for all accounts or error message
-     */
     @GetMapping("/export")
     public ResponseEntity<?> exportCSV(
             @RequestParam("accountNumber") String accountNumber,
@@ -66,13 +51,6 @@ public class AccountController {
         }
     }
 
-    /**
-     * Calculates balance for given account, optional date range filtering.
-     * @param accountNumber account number to calculate balance for
-     * @param from optional start date for filtering
-     * @param to optional end date for filtering
-     * @return HTTP response containing account balance for given account number or error message.
-     */
     @GetMapping("/getBalance")
     public ResponseEntity<?> getBalance(
             @RequestParam("accountNumber") String accountNumber,

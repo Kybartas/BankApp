@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   db:
     image: postgres:latest
@@ -9,22 +8,29 @@ services:
       POSTGRES_DB: statement_db
     ports:
       - "5431:5432"
-    restart: always
     networks:
       - app-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U kybartas -d statement_db" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   api:
     build: .  # Use Dockerfile
+    volumes:
+      - ./src:/app/src
+      - ./target/classes:/app/target/classes
     container_name: junior_api
     depends_on:
-      - db  # Start db first
+      db:  # Start db first
+        condition: service_healthy
     ports:
       - "8080:8080"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/statement_db
       SPRING_DATASOURCE_USERNAME: kybartas
       SPRING_DATASOURCE_PASSWORD: kybartas
-    restart: always
     networks:
       - app-network
 
