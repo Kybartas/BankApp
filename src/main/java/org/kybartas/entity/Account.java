@@ -1,22 +1,32 @@
 package org.kybartas.entity;
 
-import java.util.List;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
+import java.math.BigDecimal;
+
+@Entity
 public class Account {
 
-    private final String accountNumber;
-    private final List<Statement> statements;
+    @Id
+    private String accountNumber;
+    private BigDecimal balance = BigDecimal.ZERO;
 
-    public Account(String accountNumber, List<Statement> statements) {
+    public Account(){
+    }
+
+    public Account(String accountNumber) {
         this.accountNumber = accountNumber;
-        this.statements = statements;
     }
 
     public String getAccountNumber() {
         return accountNumber;
     }
 
-    public List<Statement> getStatements() {
-        return statements;
+    public BigDecimal getBalance() {
+        return balance;
+    }
+    public void setBalance(BigDecimal balance) {
+        this.balance = balance;
     }
 }
