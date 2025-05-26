@@ -1,6 +1,6 @@
 package org.kybartas.controller;
 
-import org.kybartas.service.AccountService;
+import org.kybartas.service.StatementService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,10 +12,10 @@ import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/statements")
-public class AccountController {
+public class StatementController {
 
-    private final AccountService accountService;
-    public AccountController(AccountService accountService) {
+    private final StatementService accountService;
+    public StatementController(StatementService accountService) {
         this.accountService = accountService;
     }
 
@@ -24,7 +24,7 @@ public class AccountController {
             @RequestParam("file") MultipartFile file) {
 
         try {
-            accountService.importCSV(file);
+            accountService.importCSVStatement(file);
             return ResponseEntity.ok("Account import success");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Account import error : " + e.getMessage());
@@ -38,7 +38,7 @@ public class AccountController {
             @RequestParam(value = "to", required = false) LocalDate to) {
 
         try {
-            byte[] csvData = accountService.exportCSV(accountNumber, from, to);
+            byte[] csvData = accountService.exportCSVStatement(accountNumber, from, to);
 
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=statements.csv");

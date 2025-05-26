@@ -14,14 +14,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class AccountService {
+public class StatementService {
 
     private final StatementRepository statementRepository;
-    public AccountService(StatementRepository statementRepository) {
+    public StatementService(StatementRepository statementRepository) {
         this.statementRepository = statementRepository;
     }
 
-    public void importCSV (MultipartFile file) throws Exception {
+    public void importCSVStatement(MultipartFile file) throws Exception {
 
         Path tempFile = Files.createTempFile("upload", ".csv");
         file.transferTo(tempFile.toFile());
@@ -34,7 +34,7 @@ public class AccountService {
         statementRepository.saveAll(statements);
     }
 
-    public byte[] exportCSV(String accountNumber, LocalDate from, LocalDate to) throws Exception {
+    public byte[] exportCSVStatement(String accountNumber, LocalDate from, LocalDate to) throws Exception {
 
         List<Statement> statements = new ArrayList<>();
 
