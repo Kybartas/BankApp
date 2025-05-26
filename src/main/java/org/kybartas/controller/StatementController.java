@@ -14,9 +14,9 @@ import java.time.LocalDate;
 @RequestMapping("/api/statements")
 public class StatementController {
 
-    private final StatementService accountService;
+    private final StatementService statementService;
     public StatementController(StatementService accountService) {
-        this.accountService = accountService;
+        this.statementService = accountService;
     }
 
     @PostMapping("/import")
@@ -24,7 +24,7 @@ public class StatementController {
             @RequestParam("file") MultipartFile file) {
 
         try {
-            accountService.importCSVStatement(file);
+            statementService.importCSVStatement(file);
             return ResponseEntity.ok("Account import success");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Account import error : " + e.getMessage());
@@ -38,7 +38,7 @@ public class StatementController {
             @RequestParam(value = "to", required = false) LocalDate to) {
 
         try {
-            byte[] csvData = accountService.exportCSVStatement(accountNumber, from, to);
+            byte[] csvData = statementService.exportCSVStatement(accountNumber, from, to);
 
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=statements.csv");
@@ -57,7 +57,7 @@ public class StatementController {
             @RequestParam(value = "from", required = false) LocalDate from,
             @RequestParam(value = "to", required = false) LocalDate to) {
 
-        BigDecimal balance = accountService.getBalance(accountNumber, from, to);
+        BigDecimal balance = statementService.getBalance(accountNumber, from, to);
         return ResponseEntity.ok(balance);
     }
 }
