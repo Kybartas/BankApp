@@ -34,5 +34,4 @@ public class AccountController {
                     .body(e.getMessage());
         }
     }
-
 }

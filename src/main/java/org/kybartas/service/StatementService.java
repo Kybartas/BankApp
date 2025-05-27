@@ -27,6 +27,7 @@ public class StatementService {
 
     public void importCSVStatement(MultipartFile file) throws Exception {
 
+        // 1. Process file, save to statement db
         Path tempFile = Files.createTempFile("upload", ".csv");
         file.transferTo(tempFile.toFile());
 
@@ -37,6 +38,7 @@ public class StatementService {
 
         List<Statement> savedStatements = statementRepository.saveAll(statements);
 
+        // 2. Create or update account
         String importedAccountNumber = statements.get(0).getAccountNumber();
         Account account = accountRepository.findById(importedAccountNumber).orElse(null);
 
@@ -64,14 +66,5 @@ public class StatementService {
         }
 
         return CSVUtil.writeStatements(statements);
-    }
-
-    public BigDecimal getBalance(String accountNumber, LocalDate from, LocalDate to) {
-
-        if(from != null && to != null) {
-            return statementRepository.getBalanceWithDates(accountNumber, from, to);
-        }
-
-        return statementRepository.getBalanceAll(accountNumber);
     }
 }

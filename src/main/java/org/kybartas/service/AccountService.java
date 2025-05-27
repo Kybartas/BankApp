@@ -25,5 +25,4 @@ public class AccountService {
             return account.getBalance();
         }
     }
-
 }

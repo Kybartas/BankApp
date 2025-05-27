@@ -29,18 +29,6 @@ public interface StatementRepository extends JpaRepository<Statement, Long> {
             WHEN type = 'D' THEN -amount ELSE 0 END)
             FROM statements
             WHERE account_number = :accountNumber
-            AND date >= :from
-            AND date <= :to
-            """, nativeQuery = true)
-    BigDecimal getBalanceWithDates(String accountNumber, LocalDate from, LocalDate to);
-
-    @Query(value = """
-            SELECT SUM(
-            CASE
-            WHEN type = 'K' THEN amount
-            WHEN type = 'D' THEN -amount ELSE 0 END)
-            FROM statements
-            WHERE account_number = :accountNumber
             """, nativeQuery = true)
     BigDecimal getBalanceAll(String accountNumber);
 
@@ -53,5 +41,4 @@ public interface StatementRepository extends JpaRepository<Statement, Long> {
             WHERE Id IN :ids
             """, nativeQuery = true)
     BigDecimal getBalanceByIds(List<Long> ids);
-
 }
