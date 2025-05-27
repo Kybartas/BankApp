@@ -44,4 +44,14 @@ public interface StatementRepository extends JpaRepository<Statement, Long> {
             """, nativeQuery = true)
     BigDecimal getBalanceAll(String accountNumber);
 
+    @Query(value = """
+            SELECT SUM(
+            CASE
+            WHEN type = 'K' THEN amount
+            WHEN type = 'D' THEN -amount ELSE 0 END)
+            FROM statements
+            WHERE Id IN :ids
+            """, nativeQuery = true)
+    BigDecimal getBalanceByIds(List<Long> ids);
+
 }

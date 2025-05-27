@@ -1,6 +1,8 @@
 package org.kybartas.service;
 
+import org.kybartas.entity.Account;
 import org.kybartas.entity.Statement;
+import org.kybartas.repository.AccountRepository;
 import org.kybartas.repository.StatementRepository;
 import org.kybartas.util.CSVUtil;
 import org.springframework.stereotype.Service;
@@ -17,8 +19,10 @@ import java.util.List;
 public class StatementService {
 
     private final StatementRepository statementRepository;
-    public StatementService(StatementRepository statementRepository) {
+    private final AccountRepository accountRepository;
+    public StatementService(StatementRepository statementRepository, AccountRepository accountRepository) {
         this.statementRepository = statementRepository;
+        this.accountRepository = accountRepository;
     }
 
     public void importCSVStatement(MultipartFile file) throws Exception {
@@ -31,7 +35,22 @@ public class StatementService {
         List<Statement> statements = CSVUtil.convertToStatements(filteredData);
         Files.delete(tempFile);
 
-        statementRepository.saveAll(statements);
+        List<Statement> savedStatements = statementRepository.saveAll(statements);
+
+        String importedAccountNumber = statements.get(0).getAccountNumber();
+        Account account = accountRepository.findById(importedAccountNumber).orElse(null);
+
+        if (account == null) {
+            account = new Account(importedAccountNumber);
+            account.setBalance(statementRepository.getBalanceAll(importedAccountNumber));
+            accountRepository.save(account);
+        } else {
+            List<Long> statementIds = savedStatements.stream().map(Statement::getId).toList();
+            BigDecimal balanceDelta = statementRepository.getBalanceByIds(statementIds);
+            account.setBalance(account.getBalance().add(balanceDelta));
+            accountRepository.save(account);
+        }
+
     }
 
     public byte[] exportCSVStatement(String accountNumber, LocalDate from, LocalDate to) throws Exception {
