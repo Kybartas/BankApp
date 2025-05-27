@@ -5,6 +5,7 @@ import org.kybartas.repository.AccountRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Service
 public class AccountService {
@@ -14,10 +15,15 @@ public class AccountService {
         this.accountRepository = accountRepository;
     }
 
-    public BigDecimal getBalance(String accountNumber) {
-        Account account = accountRepository.findById(accountNumber)
-                .orElseThrow(() -> new IllegalArgumentException("Account " + accountNumber + " not found"));
-        return account.getBalance();
+    public BigDecimal getBalance(String accountNumber, LocalDate from, LocalDate to) {
+
+        if(from != null && to != null) {
+            return accountRepository.getBalanceByDates(accountNumber, from, to);
+        } else {
+            Account account = accountRepository.findById(accountNumber)
+                    .orElseThrow(() -> new IllegalArgumentException("Account " + accountNumber + " not found"));
+            return account.getBalance();
+        }
     }
 
 }

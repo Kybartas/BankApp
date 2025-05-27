@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
 @RestController
 @RequestMapping("/api/accounts")
 public class AccountController {
@@ -19,10 +22,13 @@ public class AccountController {
 
     @GetMapping("/getBalance")
     public ResponseEntity<?> getBalance(
-            @RequestParam("accountNumber") String accountNumber){
+            @RequestParam("accountNumber") String accountNumber,
+            @RequestParam(value = "from", required = false) LocalDate from,
+            @RequestParam(value = "to", required = false) LocalDate to) {
 
         try{
-            return ResponseEntity.ok(accountService.getBalance(accountNumber));
+            BigDecimal balance = accountService.getBalance(accountNumber, from, to);
+            return ResponseEntity.ok(balance);
         } catch(Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(e.getMessage());

@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @RestController
@@ -49,15 +48,5 @@ public class StatementController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Account export error : " + e.getMessage());
         }
-    }
-
-    @GetMapping("/getBalance")
-    public ResponseEntity<?> getBalance(
-            @RequestParam("accountNumber") String accountNumber,
-            @RequestParam(value = "from", required = false) LocalDate from,
-            @RequestParam(value = "to", required = false) LocalDate to) {
-
-        BigDecimal balance = statementService.getBalance(accountNumber, from, to);
-        return ResponseEntity.ok(balance);
     }
 }
