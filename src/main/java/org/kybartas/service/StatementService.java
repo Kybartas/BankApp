@@ -32,9 +32,9 @@ public class StatementService {
         file.transferTo(tempFile.toFile());
 
         List<String[]> rawCSVData = CSVUtil.readRawCSV(tempFile);
+        Files.delete(tempFile);
         List<String[]> filteredData = CSVUtil.filterSwedTable(rawCSVData);
         List<Statement> statements = CSVUtil.convertToStatements(filteredData);
-        Files.delete(tempFile);
 
         List<Statement> savedStatements = statementRepository.saveAll(statements);
 
@@ -52,7 +52,6 @@ public class StatementService {
             account.setBalance(account.getBalance().add(balanceDelta));
             accountRepository.save(account);
         }
-
     }
 
     public byte[] exportCSVStatement(String accountNumber, LocalDate from, LocalDate to) throws Exception {

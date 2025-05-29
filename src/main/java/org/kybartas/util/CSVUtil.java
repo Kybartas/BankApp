@@ -17,12 +17,6 @@ import java.util.List;
 
 public class CSVUtil {
 
-    /**
-     * Method for reading an entire CSV file via CSVReader.
-     * @param filePath path of CSV file
-     * @return all rows from CSV file as a List
-     * @throws Exception in case of error while reading file
-     */
     public static List<String[]> readRawCSV(Path filePath) throws Exception {
         try (Reader reader = Files.newBufferedReader(filePath)) {
             try (CSVReader csvReader = new CSVReader(reader)) {
@@ -31,13 +25,6 @@ public class CSVUtil {
         }
     }
 
-    /**
-     * Method for reformatting CSV data into a workable format for the application.
-     * Format is based on requirements of assignment.
-     * Assumes a preset structure of statements exported from Swedbank, will fail otherwise.
-     * @param rows list of rows from a basic reading of a CSV file
-     * @return list of rows stripped of unneeded information
-     */
     public static List<String[]> filterSwedTable(List<String[]> rows) {
 
         // 0 = account number, 2 = date, 3 = beneficiary, 4 = description, 5 = amount, 6 = currency, 7 = type
@@ -60,12 +47,6 @@ public class CSVUtil {
         return filteredRows;
     }
 
-    /**
-     * Converts given data to statements
-     * Expects data to be in a workable filtered format, will fail otherwise.
-     * @param filteredData list of rows in an acceptable format currently provided by filterSwedTable method
-     * @return list of statements filled from given data
-     */
     public static List<Statement> convertToStatements(List<String[]> filteredData) {
 
         List<Statement> statements = new ArrayList<>();

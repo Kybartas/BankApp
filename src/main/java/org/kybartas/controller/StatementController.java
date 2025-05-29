@@ -1,6 +1,7 @@
 package org.kybartas.controller;
 
 import org.kybartas.service.StatementService;
+import org.kybartas.util.CSVGenerator;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,5 +49,13 @@ public class StatementController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Account export error : " + e.getMessage());
         }
+    }
+
+    @GetMapping("/generateCSV")
+    public ResponseEntity<?> generateCSV(
+            @RequestParam("statementNum") int num) {
+
+    CSVGenerator.generateCSV(num);
+    return ResponseEntity.ok("File(s) generated successfully");
     }
 }

@@ -19,6 +19,7 @@ services:
   api:
     build: .  # Use Dockerfile
     volumes:
+      - ./samples:/app/samples
       - ./src:/app/src
       - ./target/classes:/app/target/classes
     container_name: junior_api
