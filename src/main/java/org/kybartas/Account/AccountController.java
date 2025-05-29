@@ -1,5 +1,6 @@
 package org.kybartas.Account;
 
+import org.kybartas.facade.BankFacade;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,8 +16,10 @@ import java.time.LocalDate;
 public class AccountController {
 
     private final AccountService accountService;
-    public AccountController(AccountService accountService){
+    private final BankFacade bankFacade;
+    public AccountController(AccountService accountService, BankFacade bankFacade) {
         this.accountService = accountService;
+        this.bankFacade = bankFacade;
     }
 
     @GetMapping("/getBalance")
@@ -26,7 +29,7 @@ public class AccountController {
             @RequestParam(value = "to", required = false) LocalDate to) {
 
         try{
-            BigDecimal balance = accountService.getBalance(accountNumber, from, to);
+            BigDecimal balance = bankFacade.getBalance(accountNumber, from, to);
             return ResponseEntity.ok(balance);
         } catch(Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

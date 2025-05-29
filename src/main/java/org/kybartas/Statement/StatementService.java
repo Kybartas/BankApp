@@ -1,7 +1,5 @@
 package org.kybartas.Statement;
 
-import org.kybartas.Account.Account;
-import org.kybartas.Account.AccountRepository;
 import org.kybartas.util.CSVUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,15 +15,12 @@ import java.util.List;
 public class StatementService {
 
     private final StatementRepository statementRepository;
-    private final AccountRepository accountRepository;
-    public StatementService(StatementRepository statementRepository, AccountRepository accountRepository) {
+    public StatementService(StatementRepository statementRepository) {
         this.statementRepository = statementRepository;
-        this.accountRepository = accountRepository;
     }
 
-    public void importCSVStatement(MultipartFile file) throws Exception {
+    public List<Statement> importCSVStatement(MultipartFile file) throws Exception {
 
-        // 1. Process file, save to statement db
         Path tempFile = Files.createTempFile("upload", ".csv");
         file.transferTo(tempFile.toFile());
 
@@ -34,22 +29,7 @@ public class StatementService {
         List<String[]> filteredData = CSVUtil.filterSwedTable(rawCSVData);
         List<Statement> statements = CSVUtil.convertToStatements(filteredData);
 
-        List<Statement> savedStatements = statementRepository.saveAll(statements);
-
-        // 2. Create or update account
-        String importedAccountNumber = statements.get(0).getAccountNumber();
-        Account account = accountRepository.findById(importedAccountNumber).orElse(null);
-
-        if (account == null) {
-            account = new Account(importedAccountNumber);
-            account.setBalance(statementRepository.getBalanceAll(importedAccountNumber));
-            accountRepository.save(account);
-        } else {
-            List<Long> statementIds = savedStatements.stream().map(Statement::getId).toList();
-            BigDecimal balanceDelta = statementRepository.getBalanceByIds(statementIds);
-            account.setBalance(account.getBalance().add(balanceDelta));
-            accountRepository.save(account);
-        }
+        return statementRepository.saveAll(statements);
     }
 
     public byte[] exportCSVStatement(String accountNumber, LocalDate from, LocalDate to) throws Exception {
@@ -63,5 +43,19 @@ public class StatementService {
         }
 
         return CSVUtil.writeStatements(statements);
+    }
+
+    public BigDecimal calculateBalance(String accountNumber, LocalDate from, LocalDate to) {
+
+        if(from != null && to != null) {
+            return statementRepository.calculateBalanceByDates(accountNumber, from, to);
+        }
+
+        return statementRepository.calculateBalanceOverall(accountNumber);
+    }
+
+    public BigDecimal calculateBalanceByIds(List<Long> ids) {
+
+        return statementRepository.calculateBalanceByIds(ids);
     }
 }
