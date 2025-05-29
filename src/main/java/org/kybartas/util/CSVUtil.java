@@ -2,7 +2,7 @@ package org.kybartas.util;
 
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
-import org.kybartas.entity.Statement;
+import org.kybartas.Statement.Statement;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;

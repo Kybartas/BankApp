@@ -1,7 +1,5 @@
-package org.kybartas.service;
+package org.kybartas.Account;
 
-import org.kybartas.entity.Account;
-import org.kybartas.repository.AccountRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;

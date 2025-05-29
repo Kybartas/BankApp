@@ -3,8 +3,8 @@ package org.kybartas.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kybartas.entity.Account;
-import org.kybartas.entity.Statement;
+import org.kybartas.Account.Account;
+import org.kybartas.Statement.Statement;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

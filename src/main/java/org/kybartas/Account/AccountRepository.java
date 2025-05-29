@@ -1,6 +1,5 @@
-package org.kybartas.repository;
+package org.kybartas.Account;
 
-import org.kybartas.entity.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

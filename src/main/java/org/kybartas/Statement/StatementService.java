@@ -1,9 +1,7 @@
-package org.kybartas.service;
+package org.kybartas.Statement;
 
-import org.kybartas.entity.Account;
-import org.kybartas.entity.Statement;
-import org.kybartas.repository.AccountRepository;
-import org.kybartas.repository.StatementRepository;
+import org.kybartas.Account.Account;
+import org.kybartas.Account.AccountRepository;
 import org.kybartas.util.CSVUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

@@ -1,6 +1,5 @@
-package org.kybartas.controller;
+package org.kybartas.Account;
 
-import org.kybartas.service.AccountService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
