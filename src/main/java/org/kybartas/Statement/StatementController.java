@@ -1,6 +1,6 @@
 package org.kybartas.Statement;
 
-import org.kybartas.facade.StatementImportFacade;
+import org.kybartas.facade.BankFacade;
 import org.kybartas.util.CSVGenerator;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -15,10 +15,10 @@ import java.time.LocalDate;
 public class StatementController {
 
     private final StatementService statementService;
-    private final StatementImportFacade importFacade;
-    public StatementController(StatementService statementService, StatementImportFacade importFacade) {
+    private final BankFacade facade;
+    public StatementController(StatementService statementService, BankFacade facade) {
         this.statementService = statementService;
-        this.importFacade = importFacade;
+        this.facade = facade;
     }
 
     @PostMapping("/import")
@@ -26,7 +26,7 @@ public class StatementController {
             @RequestParam("file") MultipartFile file) {
 
         try {
-            importFacade.importCSV(file);
+            facade.importCSV(file);
             return ResponseEntity.ok("Account import success");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Account import error : " + e.getMessage());

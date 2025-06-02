@@ -16,10 +16,10 @@ import java.time.LocalDate;
 public class AccountController {
 
     private final AccountService accountService;
-    private final BankFacade bankFacade;
-    public AccountController(AccountService accountService, BankFacade bankFacade) {
+    private final BankFacade facade;
+    public AccountController(AccountService accountService, BankFacade facade) {
         this.accountService = accountService;
-        this.bankFacade = bankFacade;
+        this.facade = facade;
     }
 
     @GetMapping("/getBalance")
@@ -29,7 +29,7 @@ public class AccountController {
             @RequestParam(value = "to", required = false) LocalDate to) {
 
         try{
-            BigDecimal balance = bankFacade.getBalance(accountNumber, from, to);
+            BigDecimal balance = facade.getBalance(accountNumber, from, to);
             return ResponseEntity.ok(balance);
         } catch(Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
