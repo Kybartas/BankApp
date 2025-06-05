@@ -1,4 +1,4 @@
-package org.kybartas.statement;
+package org.kybartas.statement.csv;
 
 import com.opencsv.CSVWriter;
 

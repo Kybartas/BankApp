@@ -1,6 +1,7 @@
 package org.kybartas.statement;
 
 import org.kybartas.coordinator.ImportCoordinator;
+import org.kybartas.statement.csv.CSVStatementGenerator;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
