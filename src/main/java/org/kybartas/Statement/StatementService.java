@@ -49,7 +49,6 @@ public class StatementService {
         if(from != null && to != null) {
             return statementRepository.calculateBalanceByDates(accountNumber, from, to);
         }
-
         return statementRepository.calculateBalanceOverall(accountNumber);
     }
 

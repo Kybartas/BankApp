@@ -1,23 +1,19 @@
-package org.kybartas.facade;
+package org.kybartas.coordinator;
 
 import org.kybartas.account.Account;
 import org.kybartas.account.AccountService;
 import org.kybartas.statement.Statement;
 import org.kybartas.statement.StatementService;
-import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 
-@Service
-public class BankFacade {
+public class ImportCoordinator {
 
     private final AccountService accountService;
     private final StatementService statementService;
-
-    public BankFacade(AccountService accountService, StatementService statementService) {
+    public ImportCoordinator(AccountService accountService, StatementService statementService) {
         this.accountService = accountService;
         this.statementService = statementService;
     }
@@ -39,14 +35,5 @@ public class BankFacade {
         }
 
         accountService.updateOrCreateAccount(account);
-    }
-
-    public BigDecimal getBalance(String accountNumber, LocalDate from, LocalDate to) {
-
-        if(from != null && to != null) {
-            return statementService.calculateBalance(accountNumber, from, to);
-        }
-
-        return accountService.getBalance(accountNumber);
     }
 }
