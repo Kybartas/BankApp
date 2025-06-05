@@ -1,9 +1,9 @@
 package org.kybartas.facade;
 
-import org.kybartas.Account.Account;
-import org.kybartas.Account.AccountService;
-import org.kybartas.Statement.Statement;
-import org.kybartas.Statement.StatementService;
+import org.kybartas.account.Account;
+import org.kybartas.account.AccountService;
+import org.kybartas.statement.Statement;
+import org.kybartas.statement.StatementService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 

@@ -1,8 +1,7 @@
-package org.kybartas.util;
+package org.kybartas.statement;
 
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
-import org.kybartas.Statement.Statement;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
@@ -15,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class CSVUtil {
+public class CSVStatementProcessor {
 
     public static List<String[]> readRawCSV(Path filePath) throws Exception {
         try (Reader reader = Files.newBufferedReader(filePath)) {
@@ -25,7 +24,7 @@ public class CSVUtil {
         }
     }
 
-    public static List<String[]> filterSwedTable(List<String[]> rows) {
+    public static List<String[]> filterSwedBankFormat(List<String[]> rows) {
 
         // 0 = account number, 2 = date, 3 = beneficiary, 4 = description, 5 = amount, 6 = currency, 7 = type
         int[] indexes = {0, 2, 3, 4, 5, 6, 7};
@@ -66,7 +65,7 @@ public class CSVUtil {
         return statements;
     }
 
-    public static byte[] writeStatements(List<Statement> statements){
+    public static byte[] writeStatementsToByteArray(List<Statement> statements){
 
         try {
             ByteArrayOutputStream out = new ByteArrayOutputStream();

@@ -1,4 +1,4 @@
-package org.kybartas.Account;
+package org.kybartas.account;
 
 import org.kybartas.facade.BankFacade;
 import org.springframework.http.HttpStatus;

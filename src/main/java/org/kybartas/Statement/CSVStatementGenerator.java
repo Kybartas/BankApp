@@ -1,4 +1,4 @@
-package org.kybartas.util;
+package org.kybartas.statement;
 
 import com.opencsv.CSVWriter;
 
@@ -7,11 +7,11 @@ import java.io.FileWriter;
 import java.time.LocalDate;
 import java.util.Random;
 
-public class CSVGenerator {
+public class CSVStatementGenerator {
 
     private static final Random random = new Random();
 
-    public static void generateCSV(int numberOfAccounts, int transactionsPerAccount, String directory) {
+    public static void generate(int numberOfAccounts, int transactionsPerAccount, String directory) {
 
         File dir = new File(directory);
         if (!dir.exists()) {

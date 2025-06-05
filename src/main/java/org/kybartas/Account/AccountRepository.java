@@ -1,4 +1,4 @@
-package org.kybartas.Account;
+package org.kybartas.account;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

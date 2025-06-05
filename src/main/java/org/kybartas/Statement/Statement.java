@@ -1,4 +1,4 @@
-package org.kybartas.Statement;
+package org.kybartas.statement;
 
 import jakarta.persistence.*;
 

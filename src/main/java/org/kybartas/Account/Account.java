@@ -1,4 +1,4 @@
-package org.kybartas.Account;
+package org.kybartas.account;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

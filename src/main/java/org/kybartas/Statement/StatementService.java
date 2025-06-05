@@ -1,6 +1,5 @@
-package org.kybartas.Statement;
+package org.kybartas.statement;
 
-import org.kybartas.util.CSVUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,10 +23,10 @@ public class StatementService {
         Path tempFile = Files.createTempFile("upload", ".csv");
         file.transferTo(tempFile.toFile());
 
-        List<String[]> rawCSVData = CSVUtil.readRawCSV(tempFile);
+        List<String[]> rawCSVData = CSVStatementProcessor.readRawCSV(tempFile);
         Files.delete(tempFile);
-        List<String[]> filteredData = CSVUtil.filterSwedTable(rawCSVData);
-        List<Statement> statements = CSVUtil.convertToStatements(filteredData);
+        List<String[]> filteredData = CSVStatementProcessor.filterSwedBankFormat(rawCSVData);
+        List<Statement> statements = CSVStatementProcessor.convertToStatements(filteredData);
 
         return statementRepository.saveAll(statements);
     }
@@ -42,7 +41,7 @@ public class StatementService {
             statements = statementRepository.findByAccountNumber(accountNumber);
         }
 
-        return CSVUtil.writeStatements(statements);
+        return CSVStatementProcessor.writeStatementsToByteArray(statements);
     }
 
     public BigDecimal calculateBalance(String accountNumber, LocalDate from, LocalDate to) {
