@@ -2,6 +2,7 @@ package org.kybartas.util;
 
 import com.opencsv.CSVWriter;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.time.LocalDate;
 import java.util.Random;
@@ -10,18 +11,23 @@ public class CSVGenerator {
 
     private static final Random random = new Random();
 
-    public static void generateCSV(int statementNum) {
+    public static void generateCSV(int numberOfAccounts, int transactionsPerAccount, String directory) {
 
-        for (int accIndex = 0; accIndex < statementNum; accIndex++) {
+        File dir = new File(directory);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        for (int accIndex = 0; accIndex < numberOfAccounts; accIndex++) {
             String accountNumber = String.format("%03d", accIndex);
-            String filePath = "samples/" + accountNumber + ".csv";
+            String filePath = directory + "/" + accountNumber + ".csv";
 
             try (CSVWriter writer = new CSVWriter(new FileWriter(filePath))) {
 
                 writer.writeNext(new String[] {"Account Number", "Date"," ", "Beneficiary", "Description", "Amount", "Currency", "Type"});
                 writer.writeNext(new String[] {"Account Number", "Date"," ", "Beneficiary", "Description", "Amount", "Currency", "Type"});
 
-                for(int i = 0; i < 10000; i++) {
+                for(int i = 0; i < transactionsPerAccount; i++) {
                     writer.writeNext(new String[] {
                             accountNumber,
                             " ",

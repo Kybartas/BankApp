@@ -13,17 +13,14 @@ public class AccountService {
     }
 
     public BigDecimal getBalance(String accountNumber) {
-
         return accountRepository.findById(accountNumber).get().getBalance();
     }
 
     public Account getAccount(String accountNumber) {
-
         return accountRepository.findById(accountNumber).orElse(null);
     }
 
     public void updateOrCreateAccount(Account account) {
-
         accountRepository.save(account);
     }
 }

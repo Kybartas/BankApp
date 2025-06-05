@@ -55,9 +55,10 @@ public class StatementController {
 
     @GetMapping("/generateCSV")
     public ResponseEntity<?> generateCSV(
-            @RequestParam("statementNum") int num) {
+            @RequestParam("numberOfAccounts") int numberOfAccounts,
+            @RequestParam("transactionsPerAccount") int transactionsPerAccount) {
 
-    CSVGenerator.generateCSV(num);
+    CSVGenerator.generateCSV(numberOfAccounts, transactionsPerAccount, "samples");
     return ResponseEntity.ok("File(s) generated successfully");
     }
 }
