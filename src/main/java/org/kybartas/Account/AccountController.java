@@ -15,10 +15,8 @@ import java.time.LocalDate;
 @RequestMapping("/api/accounts")
 public class AccountController {
 
-    private final AccountService accountService;
     private final BalanceCoordinator balanceCoordinator;
-    public AccountController(AccountService accountService, BalanceCoordinator balanceCoordinator) {
-        this.accountService = accountService;
+    public AccountController(BalanceCoordinator balanceCoordinator) {
         this.balanceCoordinator = balanceCoordinator;
     }
 

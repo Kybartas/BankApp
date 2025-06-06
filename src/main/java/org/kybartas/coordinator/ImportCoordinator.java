@@ -4,11 +4,13 @@ import org.kybartas.account.Account;
 import org.kybartas.account.AccountService;
 import org.kybartas.statement.Statement;
 import org.kybartas.statement.StatementService;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.List;
 
+@Service
 public class ImportCoordinator {
 
     private final AccountService accountService;

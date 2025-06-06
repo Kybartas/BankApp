@@ -72,7 +72,7 @@ public class CSVStatementProcessor {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             CSVWriter writer = new CSVWriter(new OutputStreamWriter(out));
 
-            writer.writeNext(new String[] {"Account Number", "Date", "Beneficiary", "Description", "Amount", "Currency", "Type"});
+            //writer.writeNext(new String[] {"Account Number", "Date", "Beneficiary", "Description", "Amount", "Currency", "Type"});
 
             for (Statement s : statements) {
                 writer.writeNext(new String[]{
