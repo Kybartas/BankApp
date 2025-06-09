@@ -1,47 +1,71 @@
-<h1>Architecture diagram</h1>
+# Prerequisites
+ - [Docker](https://www.docker.com/products/docker-desktop/) to build and run
+ - [Git](https://git-scm.com/downloads) for cloning repository
+ - [Postman](https://www.postman.com) for testing endpoints (Optional)
 
-![diagram.drawio.png](samples/diagram.drawio.png)
+# Get started
 
-<h1>Usage</h1>
+1. Clone the repository
 
-Project is dockerized, run docker compose within project directory.
+```
+git clone https://github.com/Kybartas/juniorHomework
+```
 
-Swedbank bank statement samples under /samples directory.
+2. Navigate to the project
 
-<h3>Requests I use : </h3>
+```
+cd juniorHomework
+```
 
-/import
+3. Build and run with Docker compose
 
-curl --location 'http://localhost:8080/api/statements/import' --form 'file=@"samples/statement1.csv"'
+```
+docker compose up -d --build
+```
 
-curl --location 'http://localhost:8080/api/statements/import' --form 'file=@"samples/statement2.csv"'
+4. Test the api
 
-/export
+[Postman collection](https://www.postman.com/kristijonaskybartas/workspace/juniorhomework/collection/44482661-e5878220-e9aa-4c92-8530-65eaddfd6ae7?action=share&creator=44482661)
 
-curl --location 'http://localhost:8080/api/statements/export?accountNumber=LT444555666777888999&from=2024-01-01&to=2024-01-10'
+5. Stop the application
 
-curl --location 'http://localhost:8080/api/statements/export?accountNumber=LT444555666777888999'
+```
+docker compose down
+```
 
-curl --location 'http://localhost:8080/api/statements/export?accountNumber=LT222333444555666777&from=2024-01-01&to=2024-01-10'
+# Endpoints
 
-curl --location 'http://localhost:8080/api/statements/export?accountNumber=LT222333444555666777'
+Optional fields are in brackets [...]
 
-/getBalance
+### POST /api/statements/import
 
-curl --location 'http://localhost:8080/api/statements/getBalance?accountNumber=LT444555666777888999&from=2024-01-01&to=2024-01-10'
+Import statement CSV file, example:
 
-curl --location 'http://localhost:8080/api/statements/getBalance?accountNumber=LT444555666777888999'
+```
+curl --location 'http://localhost:8080/api/statements/import' \
+--form 'file=@"juniorHomework/samples/000.csv"'
+```
 
-curl --location 'http://localhost:8080/api/statements/getBalance?accountNumber=LT222333444555666777&from=2024-01-01&to=2024-01-10'
+### GET /api/statements/export?accountNumber={string}[&from={date}][&to={date}]
 
-curl --location 'http://localhost:8080/api/statements/getBalance?accountNumber=LT222333444555666777'
+Export stored data to CSV, example:
 
-<h1>To do</h1>
+```
+curl --location 'http://localhost:8080/api/statements/export?accountNumber=000&from=2025-01-01&to=2025-01-30'
+```
 
-Learn about exception handling conventions and implement.
+### GET /api/statements/generateCSV?numberOfAccounts={number}&transactionsPerAccount={number}[&directory={string}]
 
-(Re)implement automatic testing
+Generate random CSV statement files for api testing, example:
 
-General code improvement
+```
+curl --location 'http://localhost:8080/api/statements/generateCSV?numberOfAccounts=2&transactionsPerAccount=30'
+```
 
-Add more informative comments
+### GET /api/accounts/getBalance?accountNumber={number}[&from={date}][&to={date}]
+
+Get balance of an account, example:
+
+```
+curl --location 'http://localhost:8080/api/accounts/getBalance?accountNumber=000&from=2025-01-01&to=2025-01-30'
+```
