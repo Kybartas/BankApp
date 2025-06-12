@@ -48,10 +48,10 @@ public class ImportCoordinator {
 
     public void populateDB(int numberOfAccounts, int transactionsPerAccount) {
 
-        List<Statement> statements = new ArrayList<>();
         Random random = new Random();
 
         for (int accIndex = 0; accIndex < numberOfAccounts; accIndex++) {
+            List<Statement> statements = new ArrayList<>();
             String accountNumber = String.format("%03d", accIndex);
 
             for (int i = 0; i < transactionsPerAccount; i++) {
@@ -66,23 +66,22 @@ public class ImportCoordinator {
                 );
                 statements.add(statement);
             }
+
+            List<Statement> importedStatements = statementRepository.saveAll(statements);
+
+            String importedAccountNumber = importedStatements.get(0).getAccountNumber();
+            Account account = accountService.getAccount(importedAccountNumber);
+
+            if (account == null) {
+                account = new Account(importedAccountNumber);
+                account.setBalance(statementService.calculateBalance(importedAccountNumber, null, null));
+            } else {
+                List<Long> statementIds = importedStatements.stream().map(Statement::getId).toList();
+                BigDecimal balanceDelta = statementService.calculateBalanceByIds(statementIds);
+                account.setBalance(account.getBalance().add(balanceDelta));
+            }
+
+            accountService.updateOrCreateAccount(account);
         }
-
-        List<Statement> importedStatements = statementRepository.saveAll(statements);
-
-        String importedAccountNumber = importedStatements.get(0).getAccountNumber();
-        Account account = accountService.getAccount(importedAccountNumber);
-
-        if (account == null) {
-            account = new Account(importedAccountNumber);
-            account.setBalance(statementService.calculateBalance(importedAccountNumber, null, null));
-        } else {
-            List<Long> statementIds = importedStatements.stream().map(Statement::getId).toList();
-            BigDecimal balanceDelta = statementService.calculateBalanceByIds(statementIds);
-            account.setBalance(account.getBalance().add(balanceDelta));
-        }
-
-        accountService.updateOrCreateAccount(account);
-
     }
 }

@@ -58,4 +58,8 @@ public class StatementService {
 
         return statementRepository.calculateBalanceByIds(ids);
     }
+
+    public void deleteStatements() {
+        statementRepository.deleteAll();
+    }
 }

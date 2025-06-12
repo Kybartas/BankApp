@@ -16,10 +16,12 @@ public class AccountController {
 
     private final BalanceCoordinator balanceCoordinator;
     private final AccountRepository accountRepository;
+    private final AccountService accountService;
 
-    public AccountController(BalanceCoordinator balanceCoordinator, AccountRepository accountRepository) {
+    public AccountController(BalanceCoordinator balanceCoordinator, AccountRepository accountRepository, AccountService accountService) {
         this.balanceCoordinator = balanceCoordinator;
         this.accountRepository = accountRepository;
+        this.accountService = accountService;
     }
 
     @GetMapping("/getAccounts")
@@ -46,5 +48,12 @@ public class AccountController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(e.getMessage());
         }
+    }
+
+    @DeleteMapping("/deleteAccounts")
+    public ResponseEntity<String> deleteStatements() {
+
+        accountService.deleteAccounts();
+        return ResponseEntity.ok("Accounts deleted successfully");
     }
 }

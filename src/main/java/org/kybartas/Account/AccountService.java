@@ -23,4 +23,8 @@ public class AccountService {
     public void updateOrCreateAccount(Account account) {
         accountRepository.save(account);
     }
+
+    public void deleteAccounts() {
+        accountRepository.deleteAll();
+    }
 }

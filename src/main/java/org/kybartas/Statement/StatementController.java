@@ -9,16 +9,21 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/statements")
 public class StatementController {
 
     private final StatementService statementService;
     private final ImportCoordinator importCoordinator;
-    public StatementController(StatementService statementService, ImportCoordinator importCoordinator) {
+    private final StatementRepository statementRepository;
+
+    public StatementController(StatementService statementService, ImportCoordinator importCoordinator, StatementRepository statementRepository) {
         this.statementService = statementService;
         this.importCoordinator = importCoordinator;
+        this.statementRepository = statementRepository;
     }
 
     @PostMapping("/import")
@@ -53,6 +58,17 @@ public class StatementController {
         }
     }
 
+    @GetMapping("/getStatements")
+    public ResponseEntity<?> getStatements() {
+        try{
+            List<Statement> statements = statementRepository.findAll();
+            return ResponseEntity.ok(statements);
+        } catch(Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(e.getMessage());
+        }
+    }
+
     @GetMapping("/generateCSV")
     public ResponseEntity<?> generateCSV(
             @RequestParam("numberOfAccounts") int numberOfAccounts,
@@ -65,10 +81,15 @@ public class StatementController {
 
     @GetMapping("/populateDB")
     public ResponseEntity<String> populateDB() {
-//            @RequestParam("numberOfAccounts") int numberOfAccounts,
-//            @RequestParam("transactionsPerAccount") int transactionsPerAccount) {
 
-        importCoordinator.populateDB(5, 20);
+        importCoordinator.populateDB(5, 5);
         return ResponseEntity.ok("Database populated successfully");
+    }
+
+    @DeleteMapping("/deleteStatements")
+    public ResponseEntity<String> deleteStatements() {
+
+        statementService.deleteStatements();
+        return ResponseEntity.ok("Statements deleted successfully");
     }
 }
