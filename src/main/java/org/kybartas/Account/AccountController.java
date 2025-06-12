@@ -3,21 +3,34 @@ package org.kybartas.account;
 import org.kybartas.coordinator.BalanceCoordinator;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/accounts")
 public class AccountController {
 
     private final BalanceCoordinator balanceCoordinator;
-    public AccountController(BalanceCoordinator balanceCoordinator) {
+    private final AccountRepository accountRepository;
+
+    public AccountController(BalanceCoordinator balanceCoordinator, AccountRepository accountRepository) {
         this.balanceCoordinator = balanceCoordinator;
+        this.accountRepository = accountRepository;
+    }
+
+    @GetMapping("/getAccounts")
+    public ResponseEntity<?> getAccounts() {
+        try{
+            List<Account> accounts = accountRepository.findAll();
+            return ResponseEntity.ok(accounts);
+        } catch(Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(e.getMessage());
+        }
     }
 
     @GetMapping("/getBalance")

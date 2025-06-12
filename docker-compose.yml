@@ -35,6 +35,22 @@ services:
     networks:
       - app-network
 
+  frontend:
+    build: ./frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    container_name: frontend
+    depends_on:
+      - api
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:8080
+      - CHOKIDAR_USEPOLLING=true
+    stdin_open: true
+    tty: true
+
 networks:
   app-network:
     driver: bridge

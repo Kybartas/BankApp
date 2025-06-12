@@ -59,7 +59,16 @@ public class StatementController {
             @RequestParam("transactionsPerAccount") int transactionsPerAccount,
             @RequestParam(value = "directory", required = false, defaultValue = "samples") String directory) {
 
-    CSVStatementGenerator.generate(numberOfAccounts, transactionsPerAccount, directory);
-    return ResponseEntity.ok("File(s) generated successfully");
+        CSVStatementGenerator.generate(numberOfAccounts, transactionsPerAccount, directory);
+        return ResponseEntity.ok("File(s) generated successfully");
+    }
+
+    @GetMapping("/populateDB")
+    public ResponseEntity<String> populateDB() {
+//            @RequestParam("numberOfAccounts") int numberOfAccounts,
+//            @RequestParam("transactionsPerAccount") int transactionsPerAccount) {
+
+        importCoordinator.populateDB(5, 20);
+        return ResponseEntity.ok("Database populated successfully");
     }
 }
