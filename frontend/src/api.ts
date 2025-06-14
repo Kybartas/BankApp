@@ -6,7 +6,6 @@ export interface Account {
 }
 
 export interface Statement {
-    Id: string;
     accountNumber: string;
     date: string;
     beneficiary: string;
