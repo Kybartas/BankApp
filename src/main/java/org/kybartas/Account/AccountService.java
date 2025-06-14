@@ -2,6 +2,7 @@ package org.kybartas.account;
 
 import org.springframework.stereotype.Service;
 
+import javax.security.auth.login.AccountNotFoundException;
 import java.math.BigDecimal;
 
 @Service
@@ -12,19 +13,12 @@ public class AccountService {
         this.accountRepository = accountRepository;
     }
 
-    public BigDecimal getBalance(String accountNumber) {
-        return accountRepository.findById(accountNumber).get().getBalance();
+    public Account getAccount(String accountNumber) throws AccountNotFoundException {
+        return accountRepository.findById(accountNumber)
+                .orElseThrow(() -> new AccountNotFoundException(accountNumber));
     }
 
-    public Account getAccount(String accountNumber) {
-        return accountRepository.findById(accountNumber).orElse(null);
-    }
-
-    public void updateOrCreateAccount(Account account) {
-        accountRepository.save(account);
-    }
-
-    public void deleteAccounts() {
-        accountRepository.deleteAll();
+    public BigDecimal getBalance(String accountNumber) throws AccountNotFoundException {
+        return getAccount(accountNumber).getBalance();
     }
 }

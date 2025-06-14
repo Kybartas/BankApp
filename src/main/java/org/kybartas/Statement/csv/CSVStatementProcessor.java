@@ -2,9 +2,13 @@ package org.kybartas.statement.csv;
 
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
+import com.opencsv.exceptions.CsvException;
+import org.kybartas.exception.ReaderException;
+import org.kybartas.exception.WriterException;
 import org.kybartas.statement.Statement;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.math.BigDecimal;
@@ -17,11 +21,16 @@ import java.util.List;
 
 public class CSVStatementProcessor {
 
-    public static List<String[]> readRawCSV(Path filePath) throws Exception {
+    public static List<String[]> readRawCSV(Path filePath) throws ReaderException {
+
         try (Reader reader = Files.newBufferedReader(filePath)) {
-            try (CSVReader csvReader = new CSVReader(reader)) {
-                return csvReader.readAll();
-            }
+            CSVReader csvReader = new CSVReader(reader);
+            return csvReader.readAll();
+
+        } catch (IOException e) {
+            throw new ReaderException("Failed to read file: " + filePath + " ", e);
+        } catch (CsvException e) {
+            throw new ReaderException("Failed to parse file: " + filePath + " ", e);
         }
     }
 
@@ -66,14 +75,12 @@ public class CSVStatementProcessor {
         return statements;
     }
 
-    public static byte[] writeStatementsToByteArray(List<Statement> statements){
+    public static byte[] writeStatementsToByteArray(List<Statement> statements) throws WriterException{
 
-        try {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            CSVWriter writer = new CSVWriter(new OutputStreamWriter(out));
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try(CSVWriter writer = new CSVWriter(new OutputStreamWriter(out))) {
 
             //writer.writeNext(new String[] {"Account Number", "Date", "Beneficiary", "Description", "Amount", "Currency", "Type"});
-
             for (Statement s : statements) {
                 writer.writeNext(new String[]{
                         s.getAccountNumber(),
@@ -85,12 +92,11 @@ public class CSVStatementProcessor {
                         s.getType()
                 });
             }
-
             writer.close();
             return out.toByteArray();
 
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to export CSV", e);
+        } catch (IOException e) {
+            throw new WriterException("CSVWriter failed", e);
         }
     }
 }

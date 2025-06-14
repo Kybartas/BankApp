@@ -1,15 +1,13 @@
 package org.kybartas.statement;
 
 
+import org.kybartas.exception.ExportException;
+import org.kybartas.exception.WriterException;
 import org.kybartas.statement.csv.CSVStatementProcessor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -20,30 +18,20 @@ public class StatementService {
         this.statementRepository = statementRepository;
     }
 
-    public List<Statement> importCSVStatement(MultipartFile file) throws Exception {
+    public byte[] exportCSVStatement(String accountNumber, LocalDate from, LocalDate to) throws ExportException{
 
-        Path tempFile = Files.createTempFile("upload", ".csv");
-        file.transferTo(tempFile.toFile());
+        List<Statement> statements;
+        try {
+            if (from != null && to != null) {
+                statements = statementRepository.findByAccountNumberAndDateRange(accountNumber, from, to);
+            } else {
+                statements = statementRepository.findByAccountNumber(accountNumber);
+            }
+            return CSVStatementProcessor.writeStatementsToByteArray(statements);
 
-        List<String[]> rawCSVData = CSVStatementProcessor.readRawCSV(tempFile);
-        Files.delete(tempFile);
-        List<String[]> filteredData = CSVStatementProcessor.filterSwedBankFormat(rawCSVData);
-        List<Statement> statements = CSVStatementProcessor.convertToStatements(filteredData);
-
-        return statementRepository.saveAll(statements);
-    }
-
-    public byte[] exportCSVStatement(String accountNumber, LocalDate from, LocalDate to) throws Exception {
-
-        List<Statement> statements = new ArrayList<>();
-
-        if (from != null && to != null) {
-            statements = statementRepository.findByAccountNumberAndDateRange(accountNumber, from, to);
-        } else {
-            statements = statementRepository.findByAccountNumber(accountNumber);
+        } catch (WriterException e) {
+            throw new ExportException("Failed to export statements to file: ", e);
         }
-
-        return CSVStatementProcessor.writeStatementsToByteArray(statements);
     }
 
     public BigDecimal calculateBalance(String accountNumber, LocalDate from, LocalDate to) {
@@ -57,9 +45,5 @@ public class StatementService {
     public BigDecimal calculateBalanceByIds(List<Long> ids) {
 
         return statementRepository.calculateBalanceByIds(ids);
-    }
-
-    public void deleteStatements() {
-        statementRepository.deleteAll();
     }
 }

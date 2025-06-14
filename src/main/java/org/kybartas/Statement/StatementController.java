@@ -1,6 +1,8 @@
 package org.kybartas.statement;
 
 import org.kybartas.coordinator.ImportCoordinator;
+import org.kybartas.exception.ExportException;
+import org.kybartas.exception.ImportException;
 import org.kybartas.statement.csv.CSVStatementGenerator;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -32,9 +34,11 @@ public class StatementController {
 
         try {
             importCoordinator.importCSV(file);
-            return ResponseEntity.ok("account import success");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("account import error : " + e.getMessage());
+            return ResponseEntity.ok("Account import success");
+
+        } catch (ImportException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Failed to import CSV file : " + e.getMessage());
         }
     }
 
@@ -50,23 +54,19 @@ public class StatementController {
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=statements.csv");
             headers.add(HttpHeaders.CONTENT_TYPE, "text/csv");
-
             return ResponseEntity.ok().headers(headers).body(csvData);
-        } catch (Exception e) {
+
+        } catch (ExportException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("account export error : " + e.getMessage());
+                    .body("Failed to export data to CSV file : " + e.getMessage());
         }
     }
 
     @GetMapping("/getStatements")
     public ResponseEntity<?> getStatements() {
-        try{
-            List<Statement> statements = statementRepository.findAll();
-            return ResponseEntity.ok(statements);
-        } catch(Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(e.getMessage());
-        }
+
+        List<Statement> statements = statementRepository.findAll();
+        return ResponseEntity.ok(statements);
     }
 
     @GetMapping("/generateCSV")
@@ -89,7 +89,7 @@ public class StatementController {
     @DeleteMapping("/deleteStatements")
     public ResponseEntity<String> deleteStatements() {
 
-        statementService.deleteStatements();
+        statementRepository.deleteAll();
         return ResponseEntity.ok("Statements deleted successfully");
     }
 }

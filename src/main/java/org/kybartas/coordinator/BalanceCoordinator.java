@@ -4,6 +4,7 @@ import org.kybartas.account.AccountService;
 import org.kybartas.statement.StatementService;
 import org.springframework.stereotype.Service;
 
+import javax.security.auth.login.AccountNotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -17,7 +18,7 @@ public class BalanceCoordinator {
         this.statementService = statementService;
     }
 
-    public BigDecimal getBalance(String accountNumber, LocalDate from, LocalDate to) {
+    public BigDecimal getBalance(String accountNumber, LocalDate from, LocalDate to) throws AccountNotFoundException {
 
         if(from != null && to != null) {
             return statementService.calculateBalance(accountNumber, from, to);

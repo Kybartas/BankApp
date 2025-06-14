@@ -5,9 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.security.auth.login.AccountNotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -16,23 +16,16 @@ public class AccountController {
 
     private final BalanceCoordinator balanceCoordinator;
     private final AccountRepository accountRepository;
-    private final AccountService accountService;
 
-    public AccountController(BalanceCoordinator balanceCoordinator, AccountRepository accountRepository, AccountService accountService) {
+    public AccountController(BalanceCoordinator balanceCoordinator, AccountRepository accountRepository) {
         this.balanceCoordinator = balanceCoordinator;
         this.accountRepository = accountRepository;
-        this.accountService = accountService;
     }
 
     @GetMapping("/getAccounts")
     public ResponseEntity<?> getAccounts() {
-        try{
-            List<Account> accounts = accountRepository.findAll();
-            return ResponseEntity.ok(accounts);
-        } catch(Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(e.getMessage());
-        }
+
+        return ResponseEntity.ok(accountRepository.findAll());
     }
 
     @GetMapping("/getBalance")
@@ -44,16 +37,17 @@ public class AccountController {
         try{
             BigDecimal balance = balanceCoordinator.getBalance(accountNumber, from, to);
             return ResponseEntity.ok(balance);
-        } catch(Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(e.getMessage());
+
+        } catch(AccountNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Failed to find account: " + accountNumber + " " + e.getMessage());
         }
     }
 
     @DeleteMapping("/deleteAccounts")
     public ResponseEntity<String> deleteStatements() {
 
-        accountService.deleteAccounts();
+        accountRepository.deleteAll();
         return ResponseEntity.ok("Accounts deleted successfully");
     }
 }
