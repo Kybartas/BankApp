@@ -1,6 +1,6 @@
 package org.kybartas.statement;
 
-import org.kybartas.coordinator.ImportCoordinator;
+import org.kybartas.workflow.ImportService;
 import org.kybartas.exception.ExportException;
 import org.kybartas.exception.ImportException;
 import org.kybartas.statement.csv.CSVStatementGenerator;
@@ -19,10 +19,10 @@ import java.util.List;
 public class StatementController {
 
     private final StatementService statementService;
-    private final ImportCoordinator importCoordinator;
+    private final ImportService importCoordinator;
     private final StatementRepository statementRepository;
 
-    public StatementController(StatementService statementService, ImportCoordinator importCoordinator, StatementRepository statementRepository) {
+    public StatementController(StatementService statementService, ImportService importCoordinator, StatementRepository statementRepository) {
         this.statementService = statementService;
         this.importCoordinator = importCoordinator;
         this.statementRepository = statementRepository;

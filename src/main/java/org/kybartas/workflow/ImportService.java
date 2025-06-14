@@ -1,4 +1,4 @@
-package org.kybartas.coordinator;
+package org.kybartas.workflow;
 
 import org.kybartas.account.Account;
 import org.kybartas.account.AccountRepository;
@@ -24,14 +24,14 @@ import java.util.Random;
 
 
 @Service
-public class ImportCoordinator {
+public class ImportService {
 
     private final AccountService accountService;
     private final StatementService statementService;
     private final StatementRepository statementRepository;
     private final AccountRepository accountRepository;
 
-    public ImportCoordinator(AccountService accountService, StatementService statementService, StatementRepository statementRepository, AccountRepository accountRepository) {
+    public ImportService(AccountService accountService, StatementService statementService, StatementRepository statementRepository, AccountRepository accountRepository) {
         this.accountService = accountService;
         this.statementService = statementService;
         this.statementRepository = statementRepository;

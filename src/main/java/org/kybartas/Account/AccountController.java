@@ -1,6 +1,6 @@
 package org.kybartas.account;
 
-import org.kybartas.coordinator.BalanceCoordinator;
+import org.kybartas.workflow.BalanceService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,11 +14,11 @@ import java.time.LocalDate;
 @RequestMapping("/api/accounts")
 public class AccountController {
 
-    private final BalanceCoordinator balanceCoordinator;
+    private final BalanceService balanceService;
     private final AccountRepository accountRepository;
 
-    public AccountController(BalanceCoordinator balanceCoordinator, AccountRepository accountRepository) {
-        this.balanceCoordinator = balanceCoordinator;
+    public AccountController(BalanceService balanceCoordinator, AccountRepository accountRepository) {
+        this.balanceService = balanceCoordinator;
         this.accountRepository = accountRepository;
     }
 
@@ -35,7 +35,7 @@ public class AccountController {
             @RequestParam(value = "to", required = false) LocalDate to) {
 
         try{
-            BigDecimal balance = balanceCoordinator.getBalance(accountNumber, from, to);
+            BigDecimal balance = balanceService.getBalance(accountNumber, from, to);
             return ResponseEntity.ok(balance);
 
         } catch(AccountNotFoundException e) {

@@ -1,4 +1,4 @@
-package org.kybartas.coordinator;
+package org.kybartas.workflow;
 
 import org.kybartas.account.AccountService;
 import org.kybartas.statement.StatementService;
@@ -9,11 +9,11 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Service
-public class BalanceCoordinator {
+public class BalanceService {
 
     private final AccountService accountService;
     private final StatementService statementService;
-    public BalanceCoordinator(AccountService accountService, StatementService statementService) {
+    public BalanceService(AccountService accountService, StatementService statementService) {
         this.accountService = accountService;
         this.statementService = statementService;
     }
