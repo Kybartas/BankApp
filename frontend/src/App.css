@@ -1,44 +1,101 @@
 .App {
   text-align: center;
+  color: white;
 }
 
 .App-header {
   background-color: #282c34;
-  min-height: 20vh;
+  height: 10vh;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+  font-size: 3.5vmin;
+}
+
+.github-link {
+  position: absolute;
+  left: 50px;
+  transform: translateX(-50%);
   color: white;
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.github-link:hover {
+  color: #5d6272;
 }
 
 .App-content {
   background-color: #30333d;
-  min-height: 80vh;
+  min-height: 90vh;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
 }
 
-.accounts {
+.accounts, .statements, .logBox {
   flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
   justify-content: flex-start;
-  font-size: calc(10px + 2vmin);
-  padding: 50px;
-  color: white;
+  font-size: 3vmin;
+  padding: 20px;
 }
 
-.statements {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: flex-start;
-  font-size: calc(10px + 2vmin);
-  padding: 50px;
+.accounts h2, .statements h2, .logBox h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.button {
+  width: 100%;
+  padding: 8px 12px;
+  font-weight: bold;
+  background-color: #2b2b36;
   color: white;
+  font-size: calc(8px + 1vmin);
+  box-sizing: border-box;
+}
+
+.data-container {
+  width: 100%;
+  overflow-y: auto;
+  height: 65vmin;
+  margin-top: 20px;
+  font-size: 1.75vmin;
+  text-align: left;
+}
+
+.log {
+  background-color: #282a33;
+  border: 1px solid #555;
+  padding: 8px;
+  margin-bottom: 5px;
+  box-sizing: border-box;
+}
+
+.log-timestamp {
+  font-size: 1.5vmin;
+  opacity: 0.6;
+}
+
+.log-text {
+  margin-left: 10px;
+}
+
+.data-table {
+  width: 100%;
+  background-color: #282a33;
+  border-collapse: collapse;
+}
+
+.data-table th, .data-table td {
+  border: 1px solid #555;
+  padding: 8px 12px;
+}
+
+.data-table th {
+  background-color: #2e2f3a;
+  font-weight: bold;
 }
