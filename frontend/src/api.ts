@@ -1,11 +1,13 @@
 const API_BASE_URL = process.env.REACT_APP_API_URL;
 
 export interface Account {
+    id: string;
     accountNumber: string;
     balance: number;
 }
 
-export interface Statement {
+export interface Transaction {
+    id: string;
     accountNumber: string;
     date: string;
     beneficiary: string;
@@ -15,48 +17,37 @@ export interface Statement {
     type: string;
 }
 
-export const accountService = {
-
-    getAccounts : async (): Promise<Account[]> => {
-        const response = await fetch(`${API_BASE_URL}/api/accounts/getAccounts`);
-        if(!response.ok) {
-            throw new Error('failed to fetch accounts');
-        }
-        return response.json();
-    },
-
-    deleteAccounts : async (): Promise<string> => {
-        const response = await fetch(`${API_BASE_URL}/api/accounts/deleteAccounts`, { method: 'DELETE' });
-        if(!response.ok) {
-            throw new Error('failed to delete accounts');
-        }
-        return response.text();
-    }
-}
-
-export const statementService = {
-
-    getStatements :async (): Promise<Statement[]> => {
-        const response = await fetch(`${API_BASE_URL}/api/statements/getStatements`);
-        if(!response.ok) {
-            throw new Error('failed to fetch statements');
-        }
-        return response.json();
-    },
+export const testDataService = {
 
     populateDB : async (): Promise<string> => {
-        const response = await fetch(`${API_BASE_URL}/api/statements/populateDB`);
+        const response = await fetch(`${API_BASE_URL}/bankApi/testData/populateDB`);
         if(!response.ok) {
-            throw new Error('failed to populate database');
+            throw new Error('Failed to populate database');
         }
         return response.text();
     },
 
-    deleteStatements : async (): Promise<string> => {
-        const response = await fetch(`${API_BASE_URL}/api/statements/deleteStatements`, { method: 'DELETE' });
+    getAccounts : async (): Promise<Account[]> => {
+        const response = await fetch(`${API_BASE_URL}/bankApi/testData/getAllAccounts`);
         if(!response.ok) {
-            throw new Error('failed to delete statements');
+            throw new Error('Failed to fetch accounts');
+        }
+        return response.json();
+    },
+
+    getTransactions :async (): Promise<Transaction[]> => {
+        const response = await fetch(`${API_BASE_URL}/bankApi/testData/getAllTransactions`);
+        if(!response.ok) {
+            throw new Error('Failed to fetch transactions');
+        }
+        return response.json();
+    },
+
+    wipeDatabase : async (): Promise<string> => {
+        const response = await fetch(`${API_BASE_URL}/bankApi/testData/wipeDatabase`, { method: 'DELETE' });
+        if(!response.ok) {
+            throw new Error('Failed to wipe database');
         }
         return response.text();
-    }
+    },
 }

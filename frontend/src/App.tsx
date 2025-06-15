@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import './App.css';
-import {Account, accountService, Statement, statementService} from "./api";
+import {Account, Transaction, testDataService} from "./api";
 
 interface LogEntry {
     timeStamp: string;
@@ -9,7 +9,7 @@ interface LogEntry {
 
 function App() {
 
-    const [statements, setStatements] = useState<Statement[]>([]);
+    const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [accounts, setAccounts] = useState<Account[]>([]);
     const [logEntries, setLogEntries] = useState<LogEntry[]>([]);
 
@@ -24,56 +24,46 @@ function App() {
     const handlePopulateDB = async () => {
         try {
             addLog("Sending populate db request...");
-            const result = await statementService.populateDB();
+            const result = await testDataService.populateDB();
             addLog("API response: " + result);
             await getAccounts();
-            await getStatements();
+            await getTransactions();
         } catch (err) {
-            addLog("Error populating database!:" + err)
+            addLog("Error populating database: " + err)
         }
     };
 
     const getAccounts = async () => {
         try {
-            addLog("Sending getAccounts request...");
-            const data = await accountService.getAccounts();
+            addLog("Sending getAllAccounts request...");
+            const data = await testDataService.getAccounts();
             addLog("Accounts fetched!");
             setAccounts(data);
         } catch (err) {
-            addLog('Error fetching accounts:' + err);
+            addLog('Error fetching accounts: ' + err);
         }
     };
 
-    const getStatements = async () => {
+    const getTransactions = async () => {
         try {
-            addLog("Sending getStatements request...");
-            const data = await statementService.getStatements();
+            addLog("Sending getAllTransactions request...");
+            const data = await testDataService.getTransactions();
             addLog("Statements fetched!");
-            setStatements(data);
+            setTransactions(data);
         } catch (err) {
-            addLog('Error fetching statements:' + err);
+            addLog('Error fetching transactions:' + err);
         }
     };
 
-    const handleDeleteAccounts = async () => {
+    const handleWipeDatabase = async () => {
         try {
-            addLog("Sending deleteAccounts request...");
-            const result = await accountService.deleteAccounts();
+            addLog("Sending wipeDatabase request...");
+            const result = await testDataService.wipeDatabase();
             addLog("API response: " + result);
             await getAccounts();
+            await getTransactions();
         } catch (err) {
-            console.error('Error deleting accounts:', err);
-        }
-    };
-
-    const handleDeleteStatements = async () => {
-        try {
-            addLog("Sending deleteStatements request...");
-            const result = await statementService.deleteStatements();
-            addLog("API response: " + result);
-            await getStatements()
-        } catch (err) {
-            addLog('Error deleting statements:' + err);
+            console.error('Error wiping database:', err);
         }
     };
 
@@ -101,10 +91,6 @@ function App() {
 
                   <h2>Accounts</h2>
 
-                  <button className="button" onClick={handleDeleteAccounts}>
-                          {'Delete accounts'}
-                  </button>
-
                   {accounts.length === 0 ? (<p>No accounts found</p>) : (
                       <div className={"data-container"}>
                           <table className="data-table">
@@ -116,7 +102,7 @@ function App() {
                               </thead>
                               <tbody>
                               {accounts.map((account) => (
-                                  <tr key={account.accountNumber}>
+                                  <tr key={account.id}>
                                       <td>{account.accountNumber}</td>
                                       <td className={(account.balance >= 0 ? "positive" : "negative")}>
                                           {account.balance}
@@ -134,11 +120,7 @@ function App() {
 
                   <h2>Statements</h2>
 
-                  <button className="button" onClick={handleDeleteStatements}>
-                      {'Delete statements'}
-                  </button>
-
-                  {statements.length === 0 ? (<p>No statements found</p>) : (
+                  {transactions.length === 0 ? (<p>No statements found</p>) : (
                       <div className={"data-container"}>
                           <table className={"data-table"}>
                               <thead>
@@ -150,13 +132,13 @@ function App() {
                               </tr>
                               </thead>
                               <tbody>
-                              {statements.map((statement) => (
-                                  <tr key={statement.accountNumber}>
-                                      <td>{statement.accountNumber}</td>
-                                      <td>{statement.date}</td>
-                                      <td>{statement.amount}</td>
-                                      <td className={(statement.type === "K" ? "positive" : "negative")}>
-                                          {statement.type}
+                              {transactions.map((transaction) => (
+                                  <tr key={transaction.id}>
+                                      <td>{transaction.accountNumber}</td>
+                                      <td>{transaction.date}</td>
+                                      <td>{transaction.amount}</td>
+                                      <td className={(transaction.type === "K" ? "positive" : "negative")}>
+                                          {transaction.type}
                                       </td>
                                   </tr>
                               ))}
@@ -172,7 +154,10 @@ function App() {
                   <h2>Log</h2>
 
                   <button className="button" onClick={handlePopulateDB}>
-                      {'Populate Demo Data'}
+                      {'Populate database'}
+                  </button>
+                  <button className="button" onClick={handleWipeDatabase}>
+                      {'Wipe database'}
                   </button>
                   <button className={"button"} onClick={clearLogs}>
                       {"Clear logs"}
@@ -181,11 +166,11 @@ function App() {
                   {logEntries.length === 0 ? (<p>No logs</p>) : (
                       <div className={"data-container"}>
                           {logEntries.map((entry) => (
-                                  <div className={"log"}>
-                                      <span className={"log-timestamp"}> {entry.timeStamp} </span>
-                                      <span className={"log-text"}> {entry.text} </span>
-                                  </div>
-                              ))}
+                              <div className={"log"}>
+                                  <span className={"log-timestamp"}> {entry.timeStamp} </span>
+                                  <span className={"log-text"}> {entry.text} </span>
+                              </div>
+                          ))}
                       </div>
                   )}
 
