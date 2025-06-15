@@ -1,11 +1,11 @@
 services:
   db:
     image: postgres:latest
-    container_name: junior_db
+    container_name: bank_db
     environment:
       POSTGRES_USER: kybartas
       POSTGRES_PASSWORD: kybartas
-      POSTGRES_DB: statement_db
+      POSTGRES_DB: bank_db
     ports:
       - "5431:5432"
     networks:
@@ -22,14 +22,14 @@ services:
       - ./samples:/app/samples
       - ./src:/app/src
       - ./target/classes:/app/target/classes
-    container_name: junior_api
+    container_name: bank_api
     depends_on:
       db:  # Start db first
         condition: service_healthy
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/statement_db
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/bank_db
       SPRING_DATASOURCE_USERNAME: kybartas
       SPRING_DATASOURCE_PASSWORD: kybartas
     networks:

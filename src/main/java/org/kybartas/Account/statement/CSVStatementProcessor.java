@@ -1,11 +1,11 @@
-package org.kybartas.statement.csv;
+package org.kybartas.account.statement;
 
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvException;
+import org.kybartas.account.transaction.Transaction;
 import org.kybartas.exception.ReaderException;
 import org.kybartas.exception.WriterException;
-import org.kybartas.statement.Statement;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -21,7 +21,7 @@ import java.util.List;
 
 public class CSVStatementProcessor {
 
-    public static List<String[]> readRawCSV(Path filePath) throws ReaderException {
+    public static List<String[]> readCSVFile(Path filePath) throws ReaderException {
 
         try (Reader reader = Files.newBufferedReader(filePath)) {
             CSVReader csvReader = new CSVReader(reader);
@@ -56,40 +56,40 @@ public class CSVStatementProcessor {
         return filteredRows;
     }
 
-    public static List<Statement> convertToStatements(List<String[]> filteredData) {
+    public static List<Transaction> convertToTransactions(List<String[]> filteredData) {
 
-        List<Statement> statements = new ArrayList<>();
+        List<Transaction> transactions = new ArrayList<>();
 
         for (String[] row : filteredData) {
-            Statement statement = new Statement();
-            statement.setAccountNumber(row[0]);
-            statement.setDate(LocalDate.parse(row[1]));
-            statement.setBeneficiary(row[2]);
-            statement.setDescription(row[3]);
-            statement.setAmount(new BigDecimal(row[4]));
-            statement.setCurrency(row[5]);
-            statement.setType(row[6]);
-            statements.add(statement);
+            Transaction transaction = new Transaction();
+            transaction.setAccountNumber(row[0]);
+            transaction.setDate(LocalDate.parse(row[1]));
+            transaction.setBeneficiary(row[2]);
+            transaction.setDescription(row[3]);
+            transaction.setAmount(new BigDecimal(row[4]));
+            transaction.setCurrency(row[5]);
+            transaction.setType(row[6]);
+            transactions.add(transaction);
         }
 
-        return statements;
+        return transactions;
     }
 
-    public static byte[] writeStatementsToByteArray(List<Statement> statements) throws WriterException{
+    public static byte[] writeTransactionsToByteArray(List<Transaction> transactions) throws WriterException{
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try(CSVWriter writer = new CSVWriter(new OutputStreamWriter(out))) {
 
             //writer.writeNext(new String[] {"Account Number", "Date", "Beneficiary", "Description", "Amount", "Currency", "Type"});
-            for (Statement s : statements) {
+            for (Transaction t : transactions) {
                 writer.writeNext(new String[]{
-                        s.getAccountNumber(),
-                        s.getDate().toString(),
-                        s.getBeneficiary(),
-                        s.getDescription(),
-                        s.getAmount().toString(),
-                        s.getCurrency(),
-                        s.getType()
+                        t.getAccountNumber(),
+                        t.getDate().toString(),
+                        t.getBeneficiary(),
+                        t.getDescription(),
+                        t.getAmount().toString(),
+                        t.getCurrency(),
+                        t.getType()
                 });
             }
             writer.close();

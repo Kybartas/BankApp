@@ -86,7 +86,8 @@ function App() {
 
           <header className={"App-header"}>
 
-              <a href="https://github.com/Kybartas/juniorHomework" className="github-link" target="_blank">
+              <a href="https://github.com/Kybartas/juniorHomework" className="github-link" target="_blank"
+              rel={"noreferrer"}>
                   GitHub
               </a>
 
@@ -117,7 +118,9 @@ function App() {
                               {accounts.map((account) => (
                                   <tr key={account.accountNumber}>
                                       <td>{account.accountNumber}</td>
-                                      <td>{account.balance}</td>
+                                      <td className={(account.balance >= 0 ? "positive" : "negative")}>
+                                          {account.balance}
+                                      </td>
                                   </tr>
                               ))}
                               </tbody>
@@ -152,7 +155,9 @@ function App() {
                                       <td>{statement.accountNumber}</td>
                                       <td>{statement.date}</td>
                                       <td>{statement.amount}</td>
-                                      <td>{statement.type}</td>
+                                      <td className={(statement.type === "K" ? "positive" : "negative")}>
+                                          {statement.type}
+                                      </td>
                                   </tr>
                               ))}
                               </tbody>

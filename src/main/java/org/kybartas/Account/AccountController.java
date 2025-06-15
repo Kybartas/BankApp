@@ -1,6 +1,7 @@
 package org.kybartas.account;
 
-import org.kybartas.workflow.BalanceService;
+import org.kybartas.account.transaction.Transaction;
+import org.kybartas.account.transaction.TransactionRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -8,24 +9,32 @@ import org.springframework.web.bind.annotation.*;
 import javax.security.auth.login.AccountNotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/accounts")
+@RequestMapping("/bankApi/account")
 public class AccountController {
 
-    private final BalanceService balanceService;
-    private final AccountRepository accountRepository;
+    private final AccountService accountService;
 
-    public AccountController(BalanceService balanceCoordinator, AccountRepository accountRepository) {
-        this.balanceService = balanceCoordinator;
-        this.accountRepository = accountRepository;
+    public AccountController(AccountService accountService) {
+        this.accountService = accountService;
     }
 
-    @GetMapping("/getAccounts")
-    public ResponseEntity<?> getAccounts() {
+    @GetMapping("/getAccount")
+    public ResponseEntity<?> getAccount(
+            @RequestParam("accountNumber") String accountNumber) {
 
-        return ResponseEntity.ok(accountRepository.findAll());
+        Account account;
+        try {
+            account = accountService.getAccount(accountNumber);
+            return ResponseEntity.ok(account);
+
+        } catch (AccountNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Failed to find account: " + accountNumber + " " + e.getMessage());
+        }
     }
 
     @GetMapping("/getBalance")
@@ -35,7 +44,7 @@ public class AccountController {
             @RequestParam(value = "to", required = false) LocalDate to) {
 
         try{
-            BigDecimal balance = balanceService.getBalance(accountNumber, from, to);
+            BigDecimal balance = accountService.getBalance(accountNumber, from, to);
             return ResponseEntity.ok(balance);
 
         } catch(AccountNotFoundException e) {
@@ -44,10 +53,20 @@ public class AccountController {
         }
     }
 
-    @DeleteMapping("/deleteAccounts")
-    public ResponseEntity<String> deleteStatements() {
+    @GetMapping("/getTransactions")
+    public ResponseEntity<?> getTransactions(
+            @RequestParam("accountNumber") String accountNumber,
+            @RequestParam(value = "from", required = false) LocalDate from,
+            @RequestParam(value = "to", required = false) LocalDate to) {
 
-        accountRepository.deleteAll();
-        return ResponseEntity.ok("Accounts deleted successfully");
+        List<Transaction> transactions;
+        try {
+            transactions = accountService.getTransactions(accountNumber, from, to);
+            return ResponseEntity.ok(transactions);
+
+        } catch (AccountNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Failed to find account: " + accountNumber + " " + e.getMessage());
+        }
     }
 }

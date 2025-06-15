@@ -1,6 +1,8 @@
 package org.kybartas.account;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 import java.math.BigDecimal;
@@ -9,16 +11,25 @@ import java.math.BigDecimal;
 public class Account {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String accountNumber;
     private BigDecimal balance = BigDecimal.ZERO;
 
     public Account(){
     }
-
     public Account(String accountNumber) {
         this.accountNumber = accountNumber;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
+    }
     public String getAccountNumber() {
         return accountNumber;
     }

@@ -1,4 +1,4 @@
-package org.kybartas.statement;
+package org.kybartas.account.transaction;
 
 import jakarta.persistence.*;
 
@@ -6,8 +6,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "statements")
-public class Statement {
+public class Transaction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,9 +22,8 @@ public class Statement {
     private String currency;
     private String type;
 
-    public Statement() {}
-
-    public Statement(String accountNumber, LocalDate date, String beneficiary, String description,
+    public Transaction() {}
+    public Transaction(String accountNumber, LocalDate date, String beneficiary, String description,
                      BigDecimal amount, String currency, String type) {
 
         this.accountNumber = accountNumber;
@@ -39,9 +37,6 @@ public class Statement {
 
     public Long getId() {
         return id;
-    }
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getAccountNumber() {

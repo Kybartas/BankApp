@@ -99,3 +99,11 @@
   background-color: #2e2f3a;
   font-weight: bold;
 }
+
+.positive {
+  color: lawngreen;
+}
+
+.negative {
+  color: darkred;
+}
