@@ -31,7 +31,7 @@ public class TestDataService {
 
         Random random = new Random();
         return new Transaction(
-                String.valueOf((random.nextInt() * 100)),
+                String.valueOf((random.nextInt(100))),
                 LocalDate.now().minusDays(random.nextInt(365)),
                 "Beneficiary",
                 "Description",
