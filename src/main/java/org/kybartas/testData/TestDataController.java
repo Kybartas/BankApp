@@ -52,7 +52,7 @@ public class TestDataController {
 //            @RequestParam(value = "directory", required = false, defaultValue = "samples") String directory
     ) {
 
-        CSVStatementGenerator.generate(20, 50, "generated");
+        CSVStatementGenerator.generate(20, 50, "samples");
         return ResponseEntity.ok("File(s) generated successfully");
     }
 }

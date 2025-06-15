@@ -61,7 +61,7 @@ public class StatementService {
             return CSVStatementProcessor.writeTransactionsToByteArray(statement);
 
         } catch (WriterException e) {
-            throw new ExportException("Failed to export statements to file: ", e);
+            throw new ExportException("Failed to export statements to file: " + e.getMessage(), e);
         }
     }
 }

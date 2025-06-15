@@ -6,12 +6,14 @@ import com.opencsv.exceptions.CsvException;
 import org.kybartas.account.transaction.Transaction;
 import org.kybartas.exception.ReaderException;
 import org.kybartas.exception.WriterException;
+import org.kybartas.account.transaction.Transaction;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
@@ -75,14 +77,17 @@ public class CSVStatementProcessor {
         return transactions;
     }
 
-    public static byte[] writeTransactionsToByteArray(List<Transaction> transactions) throws WriterException{
+    public static byte[] writeTransactionsToByteArray(List<Transaction> transactions) throws WriterException {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        try(CSVWriter writer = new CSVWriter(new OutputStreamWriter(out))) {
+        try (CSVWriter writer = new CSVWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8))) {
 
-            //writer.writeNext(new String[] {"Account Number", "Date", "Beneficiary", "Description", "Amount", "Currency", "Type"});
+            writer.writeNext(new String[] {
+                    "Account Number", "Date", "Beneficiary", "Description", "Amount", "Currency", "Type"
+            });
+
             for (Transaction t : transactions) {
-                writer.writeNext(new String[]{
+                writer.writeNext(new String[] {
                         t.getAccountNumber(),
                         t.getDate().toString(),
                         t.getBeneficiary(),
@@ -92,11 +97,13 @@ public class CSVStatementProcessor {
                         t.getType()
                 });
             }
-            writer.close();
+
+            writer.flush();
+
             return out.toByteArray();
 
         } catch (IOException e) {
-            throw new WriterException("CSVWriter failed", e);
+            throw new WriterException("CSVWriter failed: " + e.getMessage(), e);
         }
     }
 }
