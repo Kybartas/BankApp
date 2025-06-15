@@ -1,6 +1,5 @@
 package org.kybartas.testData;
 
-import jdk.incubator.vector.VectorOperators;
 import org.kybartas.account.Account;
 import org.kybartas.account.AccountRepository;
 import org.kybartas.account.transaction.Transaction;
