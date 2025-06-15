@@ -18,7 +18,9 @@ public class TestDataController {
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
 
-    public TestDataController(TestDataService testDataService, AccountRepository accountRepository, TransactionRepository transactionRepository) {
+    public TestDataController(TestDataService testDataService, AccountRepository accountRepository,
+                              TransactionRepository transactionRepository) {
+
         this.testDataService = testDataService;
         this.accountRepository = accountRepository;
         this.transactionRepository = transactionRepository;
@@ -54,5 +56,13 @@ public class TestDataController {
 
         CSVStatementGenerator.generate(20, 50, "samples");
         return ResponseEntity.ok("File(s) generated successfully");
+    }
+
+    @DeleteMapping("/wipeDatabase")
+    public ResponseEntity<?> wipeDatabase() {
+
+        accountRepository.deleteAll();
+        transactionRepository.deleteAll();
+        return ResponseEntity.ok("Database wiped successfully");
     }
 }
