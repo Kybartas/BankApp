@@ -35,8 +35,16 @@ export const testDataService = {
         return response.json();
     },
 
-    getTransactions :async (): Promise<Transaction[]> => {
-        const response = await fetch(`${API_BASE_URL}/bankApi/testData/getAllTransactions`);
+    getBalance : async (accountNumber: string): Promise<number> => {
+        const response = await fetch(`${API_BASE_URL}/bankApi/account/getBalance?accountNumber=${accountNumber}`);
+        if(!response.ok) {
+            throw new Error('Failed to fetch balance');
+        }
+        return response.json();
+    },
+
+    getTransactions :async (accountNumber: string): Promise<Transaction[]> => {
+        const response = await fetch(`${API_BASE_URL}/bankApi/account/getTransactions?accountNumber=${accountNumber}`);
         if(!response.ok) {
             throw new Error('Failed to fetch transactions');
         }
