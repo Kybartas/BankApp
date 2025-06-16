@@ -21,18 +21,23 @@ public class TestDataService {
     public void populateDB(int numberOfAccounts, int transactionsPerAccount) {
 
         for (int i = 0; i < numberOfAccounts; i++) {
+
+            LocalDate startDate = LocalDate.now().minusDays(transactionsPerAccount);
+
             for (int j = 0; j < transactionsPerAccount; j++) {
-                accountService.newTransaction(generateRandomTransaction());
+
+                LocalDate date = startDate.plusDays(j);
+                accountService.newTransaction(generateRandomTransaction(i, date));
             }
         }
     }
 
-    private Transaction generateRandomTransaction() {
+    private Transaction generateRandomTransaction(int accountNum, LocalDate date) {
 
         Random random = new Random();
         return new Transaction(
-                String.valueOf((random.nextInt(100))),
-                LocalDate.now().minusDays(random.nextInt(365)),
+                String.format("%03d", accountNum),
+                date,
                 "Beneficiary",
                 "Description",
                 BigDecimal.valueOf(random.nextDouble() * 100),
