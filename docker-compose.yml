@@ -2,12 +2,12 @@ services:
   db:
     image: postgres:latest
     container_name: bank_db
+    ports:
+      - "5431:5432"
     environment:
       POSTGRES_USER: kybartas
       POSTGRES_PASSWORD: kybartas
       POSTGRES_DB: bank_db
-    ports:
-      - "5431:5432"
     networks:
       - app-network
     healthcheck:
@@ -18,14 +18,7 @@ services:
 
   api:
     build: .  # Use Dockerfile
-    volumes:
-      - ./samples:/app/samples
-      - ./src:/app/src
-      - ./target/classes:/app/target/classes
     container_name: bank_api
-    depends_on:
-      db:  # Start db first
-        condition: service_healthy
     ports:
       - "8080:8080"
     environment:
@@ -34,20 +27,23 @@ services:
       SPRING_DATASOURCE_PASSWORD: kybartas
     networks:
       - app-network
+    depends_on:
+      db:
+        condition: service_healthy
 
   frontend:
     build: ./frontend
+    container_name: frontend
     volumes:
       - ./frontend:/app
       - /app/node_modules
-    container_name: frontend
-    depends_on:
-      - api
     ports:
       - "3000:3000"
     environment:
       - REACT_APP_API_URL=http://localhost:8080
       - CHOKIDAR_USEPOLLING=true
+    depends_on:
+      - api
     stdin_open: true
     tty: true
 
