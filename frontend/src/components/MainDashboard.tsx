@@ -4,7 +4,7 @@ import { Account, testDataService } from '../api';
 
 const MainDashboard = () => {
     const [accounts, setAccounts] = useState<Account[]>([]);
-    const [dbVersion, setDbVersion] = useState(0);
+    const [DBVersion, setDBVersion] = useState(0);
 
     useEffect(() => {
         const getAccounts = async () => {
@@ -19,14 +19,14 @@ const MainDashboard = () => {
         };
 
         getAccounts();
-    }, [dbVersion]);
+    }, [DBVersion]);
 
     const handlePopulateDB = async () => {
         try {
             console.log("Sending populate db request...");
             const result = await testDataService.populateDB();
             console.log("API response: " + result);
-            setDbVersion(prev => prev + 1);
+            setDBVersion(prev => prev + 1);
         } catch (err) {
             console.error("Error populating database: " + err);
         }

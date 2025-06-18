@@ -43,19 +43,28 @@ export const testDataService = {
         return response.json();
     },
 
-    getTransactions :async (accountNumber: string): Promise<Transaction[]> => {
+    getTransactions : async (accountNumber: string): Promise<Transaction[]> => {
         const response = await fetch(`${API_BASE_URL}/bankApi/account/getTransactions?accountNumber=${accountNumber}`);
         if(!response.ok) {
             throw new Error('Failed to fetch transactions');
         }
         return response.json();
     },
+}
 
-    wipeDatabase : async (): Promise<string> => {
-        const response = await fetch(`${API_BASE_URL}/bankApi/testData/wipeDatabase`, { method: 'DELETE' });
+export const statementService = {
+
+    exportCSV : async (accountNumber: string): Promise<void> => {
+        const response = await fetch(`${API_BASE_URL}/bankApi/statement/exportCSV?accountNumber=${accountNumber}`);
         if(!response.ok) {
-            throw new Error('Failed to wipe database');
+            throw new Error("Failed to export CSV: " + await response.text());
         }
-        return response.text();
-    },
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = accountNumber + "_statement.csv";
+        a.click();
+    }
 }

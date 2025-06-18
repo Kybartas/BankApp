@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {Link, useParams} from 'react-router-dom';
-import { Transaction, testDataService } from '../api';
+import { Transaction, testDataService, statementService } from '../api';
 
 const AccountDashboard = () => {
     const { accountNumber } = useParams<{ accountNumber: string }>();
@@ -17,7 +17,7 @@ const AccountDashboard = () => {
                 console.log("Transactions fetched!");
                 setTransactions(data);
             } catch (err) {
-                console.log('Error fetching transactions: ' + err);
+                console.error('Error fetching transactions: ' + err);
             }
         };
 
@@ -30,13 +30,23 @@ const AccountDashboard = () => {
                 console.log("Balance fetched!");
                 setBalance(data);
             } catch (err) {
-                console.log('Error fetching balance: ' + err);
+                console.error('Error fetching balance: ' + err);
             }
         };
 
         getBalance();
         getTransactions();
     }, []);
+
+    const exportCSV = () => {
+        if (!accountNumber) return;
+
+        try {
+            statementService.exportCSV(accountNumber)
+        } catch (err) {
+            console.error("Error exporting CSV: " + err);
+        }
+    }
 
     return (
         <>
@@ -47,6 +57,10 @@ const AccountDashboard = () => {
                 </Link>
 
                 <h1>Account {accountNumber} Dashboard</h1>
+
+                <button className="button" onClick={exportCSV}>
+                    {'Download CSV statement'}
+                </button>
 
             </header>
 
