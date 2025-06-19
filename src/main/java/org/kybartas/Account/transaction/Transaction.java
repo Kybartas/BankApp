@@ -4,13 +4,13 @@ import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Entity
 public class Transaction {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     @Column(name = "account_number")
     private String accountNumber;
@@ -23,20 +23,21 @@ public class Transaction {
     private String type;
 
     public Transaction() {}
-    public Transaction(String accountNumber, LocalDate date, String beneficiary, String description,
-                     BigDecimal amount, String currency, String type) {
 
-        this.accountNumber = accountNumber;
-        this.date = date;
-        this.beneficiary = beneficiary;
-        this.description = description;
-        this.amount = amount;
-        this.currency = currency;
-        this.type = type;
+    @PrePersist
+    public void generateId() {
+        if (this.id == null) {
+            String datePart = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE);
+            long randomPart = System.nanoTime();
+            this.id = datePart + "-" + randomPart;
+        }
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
+    }
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getAccountNumber() {

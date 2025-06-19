@@ -1,21 +1,28 @@
 package org.kybartas.account;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Entity
 public class Account {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     private String accountNumber;
     private BigDecimal balance = BigDecimal.ZERO;
+
+    @PrePersist
+    public void generateId() {
+        if (this.id == null) {
+            String datePart = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE);
+            long randomPart = System.nanoTime();
+            this.id = datePart + "-" + randomPart;
+        }
+    }
 
     public Account(){
     }
@@ -23,8 +30,11 @@ public class Account {
         this.accountNumber = accountNumber;
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
+    }
+    public void setId(String id) {
+        this.id = id;
     }
 
     public void setAccountNumber(String accountNumber) {

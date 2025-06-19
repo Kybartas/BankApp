@@ -29,7 +29,7 @@ public class TestDataController {
     @GetMapping("/populateDB")
     public ResponseEntity<String> populateDB() {
 
-        testDataService.populateDB(5, 5);
+        testDataService.populateDB(20, 40);
         return ResponseEntity.ok("Database populated successfully");
     }
 
@@ -45,24 +45,5 @@ public class TestDataController {
 
         List<Account> accounts = accountRepository.findAll();
         return ResponseEntity.ok(accounts);
-    }
-
-    @GetMapping("/generateCSVStatementFile")
-    public ResponseEntity<?> generateCSV(
-//            @RequestParam("numberOfAccounts") int numberOfAccounts,
-//            @RequestParam("transactionsPerAccount") int transactionsPerAccount,
-//            @RequestParam(value = "directory", required = false, defaultValue = "samples") String directory
-    ) {
-
-        CSVStatementGenerator.generate(20, 50, "samples");
-        return ResponseEntity.ok("File(s) generated successfully");
-    }
-
-    @DeleteMapping("/wipeDatabase")
-    public ResponseEntity<?> wipeDatabase() {
-
-        accountRepository.deleteAll();
-        transactionRepository.deleteAll();
-        return ResponseEntity.ok("Database wiped successfully");
     }
 }

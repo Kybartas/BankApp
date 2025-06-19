@@ -19,8 +19,6 @@ public class AccountService {
         this.transactionRepository = transactionRepository;
     }
 
-    /// Client-side ///
-
     public Account getAccount(String accountNumber) throws AccountNotFoundException {
 
         return accountRepository.findAccountByAccountNumber(accountNumber)
@@ -42,8 +40,6 @@ public class AccountService {
         }
         return transactionRepository.getTransactionsByAccountNumber(accountNumber);
     }
-
-    /// Server-side ///
 
     public void newTransaction(Transaction transaction) {
 

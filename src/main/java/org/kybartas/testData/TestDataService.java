@@ -35,14 +35,15 @@ public class TestDataService {
     private Transaction generateRandomTransaction(int accountNum, LocalDate date) {
 
         Random random = new Random();
-        return new Transaction(
-                String.format("%03d", accountNum),
-                date,
-                "Beneficiary",
-                "Description",
-                BigDecimal.valueOf(random.nextDouble() * 100),
-                "EUR",
-                random.nextBoolean() ? "K" : "D"
-        );
+        Transaction t = new Transaction();
+        t.setAccountNumber(String.format("%03d", accountNum));
+        t.setDate(date);
+        t.setBeneficiary("Beneficiary");
+        t.setDescription("Description");
+        t.setAmount(BigDecimal.valueOf(random.nextDouble() * 100));
+        t.setCurrency("EUR");
+        t.setType(random.nextBoolean() ? "K" : "D");
+
+        return t;
     }
 }
