@@ -13,7 +13,6 @@
   min-height: 60px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   padding-left: 20px;
   padding-right: 20px;
   font-size: calc(2vmin + 10px);
@@ -21,15 +20,13 @@
 }
 
 .header h1 {
-  margin: 0 auto;
+  padding: 20px;
   font-size: calc(4vmin + 10px);
   font-weight: bold;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
 }
 
 .button {
+  margin-left: 20px;
   padding: 8px 12px;
   font-weight: bold;
   background-color: #2b2b36;
@@ -47,6 +44,7 @@
   text-decoration: none;
   font-size: 3vmin;
   font-weight: bold;
+  margin-left: 30vmin;
 }
 
 .github-link:hover {
@@ -111,9 +109,43 @@
 }
 
 .positive {
-  color: lawngreen;
+  color: #54d06d;
 }
 
 .negative {
-  color: darkred;
+  color: #935050;
+}
+
+.notification-container {
+  position: fixed;
+  top: 100px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 9999;
+}
+
+.notification {
+  opacity: 1;
+  padding: 8px 12px;
+  border-radius: 5px;
+  color: white;
+  animation: fadeOut 4s;
+}
+
+.notification.success {
+  background-color: #54d06d;
+}
+.notification.error {
+  background-color: #935050;
+}
+.notification.job {
+  background-color: #6d7565;
+}
+
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  70% { opacity: 1; }
+  100% { opacity: 0; }
 }

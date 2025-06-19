@@ -33,7 +33,10 @@ export const testDataService = {
             throw new Error('Failed to fetch accounts');
         }
         return response.json();
-    },
+    }
+}
+
+export const accountService = {
 
     getBalance : async (accountNumber: string): Promise<number> => {
         const response = await fetch(`${API_BASE_URL}/bankApi/account/getBalance?accountNumber=${accountNumber}`);
@@ -66,5 +69,16 @@ export const statementService = {
         a.href = url;
         a.download = accountNumber + "_statement.csv";
         a.click();
+    },
+
+    importCSV : async (file: File): Promise<void> => {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const response = await fetch(`${API_BASE_URL}/bankApi/statement/importCSV`, {method: "POST", body: formData});
+
+        if(!response.ok) {
+            throw new Error("Failed to import CSV: " + await response.text());
+        }
     }
 }

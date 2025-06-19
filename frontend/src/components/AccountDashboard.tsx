@@ -1,23 +1,42 @@
 import React, { useState, useEffect } from 'react';
 import {Link, useParams} from 'react-router-dom';
-import { Transaction, testDataService, statementService } from '../api';
+import { Transaction, accountService, statementService } from '../api';
 
 const AccountDashboard = () => {
+
     const { accountNumber } = useParams<{ accountNumber: string }>();
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [balance, setBalance] = useState<number>(0);
 
+    type Notification = {
+        id: number;
+        message: string;
+        type: 'success' | 'error' | 'job';
+    }
+
+    const [notifications, setNotifications] = useState<Notification[]>([]);
+
+    const addNotification = (message: string, type: Notification['type']) => {
+        const id = Date.now();
+        const newNotification = {id, message, type};
+        setNotifications(prev => [...prev, newNotification]);
+
+        setTimeout(() => {
+            setNotifications(prev => prev.filter(n => n.id !== id));
+        }, 4000);
+    }
+
     useEffect(() => {
+
+
         const getTransactions = async () => {
             if (!accountNumber) return;
             
             try {
-                console.log("Sending getTransactions for " + accountNumber + " request...");
-                const data = await testDataService.getTransactions(accountNumber);
-                console.log("Transactions fetched!");
+                const data = await accountService.getTransactions(accountNumber);
                 setTransactions(data);
             } catch (err) {
-                console.error('Error fetching transactions: ' + err);
+                addNotification('Error fetching transactions: ' + err, 'error');
             }
         };
 
@@ -25,26 +44,42 @@ const AccountDashboard = () => {
             if (!accountNumber) return;
             
             try {
-                console.log("Sending getBalance for " + accountNumber + " request...");
-                const data = await testDataService.getBalance(accountNumber);
-                console.log("Balance fetched!");
+                const data = await accountService.getBalance(accountNumber);
                 setBalance(data);
             } catch (err) {
-                console.error('Error fetching balance: ' + err);
+                addNotification('Error fetching balance: ' + err, 'error');
             }
         };
 
-        getBalance();
-        getTransactions();
-    }, []);
+        const loadData = async () => {
+            if (!accountNumber) return;
+
+            addNotification(`Getting data for ${accountNumber}...`, 'job');
+
+            try {
+                await Promise.all([
+                    getBalance(),
+                    getTransactions()
+                ]);
+                addNotification(`${accountNumber} data fetched!`, 'success');
+            } catch (err) {
+                // addNotification("Error fetching data: " + err, 'error');
+            }
+        }
+
+        loadData();
+
+    }, [accountNumber]);
 
     const exportCSV = () => {
         if (!accountNumber) return;
 
         try {
+            addNotification("Sending exportCSV request...", 'job')
             statementService.exportCSV(accountNumber)
+            addNotification("Statement exported!", 'success');
         } catch (err) {
-            console.error("Error exporting CSV: " + err);
+            addNotification("Error exporting CSV: " + err, 'error');
         }
     }
 
@@ -71,7 +106,7 @@ const AccountDashboard = () => {
                     <h2>Balance: {balance}</h2>
 
                     <h2>Transactions: </h2>
-                    
+
                     {transactions.length === 0 ? (<p>No statements found</p>) : (
                         <div className="data-container">
                             <table className="data-table">
@@ -83,6 +118,7 @@ const AccountDashboard = () => {
                                     <th>Beneficiary</th>
                                     <th>Description</th>
                                     <th>Amount</th>
+                                    <th>Currency</th>
                                     <th>Type</th>
                                 </tr>
                                 </thead>
@@ -95,6 +131,7 @@ const AccountDashboard = () => {
                                         <td>{transaction.beneficiary}</td>
                                         <td>{transaction.description}</td>
                                         <td>{transaction.amount}</td>
+                                        <td>{transaction.currency}</td>
                                         <td className={transaction.type === "K" ? "positive" : "negative"}>
                                             {transaction.type}
                                         </td>
@@ -106,6 +143,15 @@ const AccountDashboard = () => {
                     )}
                 </div>
             </main>
+
+            <div className={"notification-container"}>
+                {notifications.map(n => (
+                    <div key={n.id} className={`notification ${n.type}`}>
+                        {n.message}
+                    </div>
+                ))}
+            </div>
+
         </>
     );
 };

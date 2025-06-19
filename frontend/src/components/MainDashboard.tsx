@@ -1,34 +1,79 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Account, testDataService } from '../api';
+import { Account, testDataService, statementService } from '../api';
+import ImportCSVButton from './ImportCSVButton';
 
 const MainDashboard = () => {
+
     const [accounts, setAccounts] = useState<Account[]>([]);
-    const [DBVersion, setDBVersion] = useState(0);
+    const [dbVersion, setDbVersion] = useState(0);
+    const [loading, setLoading] = useState(false);
+
+    type Notification = {
+        id: number;
+        message: string;
+        type: 'success' | 'error' | 'job';
+    }
+
+    const [notifications, setNotifications] = useState<Notification[]>([]);
+
+    const addNotification = (message: string, type: Notification['type']) => {
+        const id = Date.now();
+        const newNotification = {id, message, type};
+        setNotifications(prev => [...prev, newNotification]);
+
+        setTimeout(() => {
+            setNotifications(prev => prev.filter(n => n.id !== id));
+        }, 4000);
+    }
 
     useEffect(() => {
+
         const getAccounts = async () => {
+            setLoading(true);
             try {
-                console.log("Sending getAllAccounts request...");
+                addNotification("Sending getAllAccounts request...", 'job');
                 const data = await testDataService.getAccounts();
-                console.log("Accounts fetched!");
+                addNotification("Accounts fetched!", "success");
                 setAccounts(data);
             } catch (err) {
-                console.error('Error fetching accounts: ' + err);
+                addNotification('Error fetching accounts: ' + err, 'error');
+            } finally {
+                setLoading(false);
             }
         };
 
         getAccounts();
-    }, [DBVersion]);
+
+    }, [dbVersion]);
 
     const handlePopulateDB = async () => {
+        setLoading(true);
         try {
-            console.log("Sending populate db request...");
+            addNotification("Sending populate db request...", 'job');
             const result = await testDataService.populateDB();
-            console.log("API response: " + result);
-            setDBVersion(prev => prev + 1);
+            addNotification('API response: ' + result, 'success');
+            setDbVersion(prev => prev + 1);
         } catch (err) {
-            console.error("Error populating database: " + err);
+            addNotification("Error populating database: " + err, 'error');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleImportCSV = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if(!file) return;
+        setLoading(true);
+        try {
+            addNotification("Sending import CSV request...", 'job');
+            await statementService.importCSV(file);
+            setDbVersion(prev => prev + 1);
+            addNotification('Statement imported successfully!', 'success');
+        } catch (err) {
+            addNotification('Error importing CSV: ' + err, 'error');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -36,16 +81,17 @@ const MainDashboard = () => {
         <>
             <header className="header">
 
-                <a href="https://github.com/Kybartas/juniorHomework" className="github-link" target="_blank"
-                   rel="noreferrer">
-                    GitHub
-                </a>
-
                 <h1>BankApp demo</h1>
 
                 <button className="button" onClick={handlePopulateDB}>
                     {'Populate database'}
                 </button>
+                <ImportCSVButton onImport={handleImportCSV}/>
+
+                <a href="https://github.com/Kybartas/juniorHomework" className="github-link" target="_blank"
+                   rel="noreferrer">
+                    GitHub
+                </a>
 
             </header>
 
@@ -55,7 +101,7 @@ const MainDashboard = () => {
 
                     <h2>Accounts</h2>
 
-                    {accounts.length === 0 ? (<p>No accounts found</p>) : (
+                    {loading ? (<p>Loading accounts...</p>) : accounts.length === 0 ? (<p>No accounts found</p>) : (
                         <div className="data-container">
                             <table className="data-table">
                                 <thead>
@@ -83,8 +129,18 @@ const MainDashboard = () => {
                             </table>
                         </div>
                     )}
+
                 </div>
             </main>
+
+            <div className={"notification-container"}>
+                {notifications.map(n => (
+                    <div key={n.id} className={`notification ${n.type}`}>
+                        {n.message}
+                    </div>
+                ))}
+            </div>
+
         </>
     );
 };
