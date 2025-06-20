@@ -1,0 +1,87 @@
+.dashboard-container {
+    display: flex;
+    background-color: #30333d;
+    flex: 1;
+    flex-direction: column;
+    justify-content: flex-start;
+    overflow: hidden;
+    font-size: calc(3vmin + 10px);
+}
+
+.dashboard-header {
+    display: flex;
+    height: 10vh;
+    background-color: #2b2e38;
+    align-items: center;
+    justify-content: flex-start;
+    flex-direction: row;
+}
+
+.dashboard-header h1 {
+    padding: 20px;
+    text-align: center;
+    font-size: calc(3vmin + 10px);
+}
+
+.button {
+    margin-right: 20px;
+    padding: 8px 12px;
+    background-color: #2b2b36;
+    color: white;
+    font-size: calc(1.5vmin + 10px);
+    cursor: pointer;
+    width: fit-content;
+}
+
+.button:hover {
+    background-color: #5d6272;
+}
+
+.data-container {
+    padding: 20px;
+    display: flex;
+    flex: 1;
+    font-size: calc(1vmin + 10px);
+    text-align: left;
+    overflow: scroll;
+}
+
+.account-dashboard-link {
+    color: #a1d0da;
+    text-decoration: none;
+}
+
+.account-dashboard-link:hover {
+    color: #dadada;
+}
+
+.data-table {
+    width: 100%;
+    background-color: #282a33;
+    border-collapse: collapse;
+    table-layout: fixed;
+
+}
+
+.data-table th, .data-table td {
+    border: 1px solid #555;
+    padding: 8px 12px;
+}
+
+.data-table th {
+    background-color: #2e2f3a;
+    font-weight: bold;
+}
+
+.data-table th:nth-child(1), .data-table td:nth-child(1) {
+    font-size: calc(0.75vmin + 10px);
+    width: 20%;
+}
+
+.positive {
+    color: #54d06d;
+}
+
+.negative {
+    color: #935050;
+}
