@@ -3,12 +3,17 @@ import {useParams} from 'react-router-dom';
 import { Transaction, accountService, statementService } from '../api';
 import {useNotifications} from "../notification/Notifications";
 import './dashboard.css';
+import './modal.css';
 
 const AccountDashboard = () => {
 
     const { accountNumber } = useParams<{ accountNumber: string }>();
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [balance, setBalance] = useState<number>(0);
+
+    const [fromDate, setFromDate] = useState<string>("");
+    const [toDate, setToDate] = useState<string>("");
+    const [showDateModal, setShowDateModal] = useState(false);
 
     const { addNotification } = useNotifications();
 
@@ -39,7 +44,7 @@ const AccountDashboard = () => {
         const loadData = async () => {
             if (!accountNumber) return;
 
-            addNotification(`Getting data for ${accountNumber}...`, 'job');
+            addNotification(`Fetching data for ${accountNumber}...`, 'job');
 
             await Promise.all([
                 getBalance(),
@@ -53,7 +58,7 @@ const AccountDashboard = () => {
 
     }, [accountNumber]);
 
-    const exportCSV = () => {
+    const exportCSV = async () => {
         if (!accountNumber) return;
 
         try {
@@ -62,6 +67,25 @@ const AccountDashboard = () => {
             addNotification("Statement exported!", 'success');
         } catch (err) {
             addNotification("Error exporting CSV: " + err, 'error');
+        }
+    }
+
+    const loadTransactionsByDate = async () => {
+        if(!accountNumber || !fromDate || !toDate) {
+            addNotification("Provide dates to load more transactions", "error");
+            return;
+        }
+
+        try {
+            const from = new Date(fromDate);
+            const to = new Date(toDate);
+
+            addNotification(`Fetching dated transactions list for ${accountNumber}...`, 'job');
+            const newTransactionList = await accountService.getTransactionsByDate(accountNumber, from, to);
+            setTransactions(newTransactionList);
+            addNotification("Dated transactions fetched!", "success")
+        } catch (err) {
+            addNotification("Error fetching dated transactions: " + err, "error");
         }
     }
 
@@ -76,10 +100,35 @@ const AccountDashboard = () => {
                 <h1>Balance: {balance}</h1>
 
                 <button className="button" onClick={exportCSV}>
-                    {'Download CSV statement'}
+                    Download CSV statement
+                </button>
+
+                <button className="button" onClick={ () => setShowDateModal(true) }>
+                    View more transactions
                 </button>
 
             </div>
+
+
+            {showDateModal && (
+                <div className="modal-overlay">
+                    <div className="modal-content">
+                        <h2>Select Date Range</h2>
+                        <label>
+                            From:
+                            <input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} />
+                        </label>
+                        <label>
+                            To:
+                            <input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} />
+                        </label>
+                        <div className="modal-buttons">
+                            <button className="button" onClick={loadTransactionsByDate}>Confirm</button>
+                            <button className="button cancel" onClick={() => setShowDateModal(false)}>Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
 
             {transactions.length === 0 ? (<p>No statements found</p>) : (

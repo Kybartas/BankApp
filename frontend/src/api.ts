@@ -53,6 +53,15 @@ export const accountService = {
         }
         return response.json();
     },
+
+    getTransactionsByDate : async (accountNumber: string, from: Date, to: Date): Promise<Transaction[]> => {
+        const response = await fetch(`${API_BASE_URL}/bankApi/account/getTransactions?accountNumber=${accountNumber}&from=${from.toISOString().split('T')[0]}&to=${to.toISOString().split('T')[0]}`
+        );
+        if(!response.ok) {
+            throw new Error("Failed to fetch transactions by date");
+        }
+        return response.json();
+    }
 }
 
 export const statementService = {

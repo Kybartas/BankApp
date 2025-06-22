@@ -12,9 +12,7 @@ public class Transaction {
     @Id
     private String id;
 
-    @Column(name = "account_number")
     private String accountNumber;
-
     private LocalDate date;
     private String beneficiary;
     private String description;

@@ -38,7 +38,7 @@ public class AccountService {
         if (from != null && to != null) {
             return transactionRepository.getTransactionsByAccountNumberAndDateRange(accountNumber, from, to);
         }
-        return transactionRepository.getTransactionsByAccountNumber(accountNumber);
+        return transactionRepository.findTop20ByAccountNumberOrderByDateDesc(accountNumber);
     }
 
     public void newTransaction(Transaction transaction) {
