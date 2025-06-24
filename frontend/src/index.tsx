@@ -1,14 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import {BrowserRouter, Route, Routes} from 'react-router-dom'
-import { NotificationProvider, NotificationContainer } from './notification/Notifications';
-import Header from "./header/Header";
-import HomeDashboard from "./dashboard/HomeDashboard";
-import AccountDashboard from "./dashboard/AccountDashboard";
-import './index.css';
+import { NotificationProvider } from './context/NotificationContext';
+import { NotificationContainer } from './components/NotificationContainer';
+import Header from "./components/Header";
+import HomeDashboard from "./pages/HomeDashboard";
+import AccountDashboard from "./pages/AccountDashboard";
+import './styles/index.css';
 
 const root = ReactDOM.createRoot(
-    document.getElementById('root') as HTMLElement
+  document.getElementById('root') as HTMLElement
 );
 
 root.render(

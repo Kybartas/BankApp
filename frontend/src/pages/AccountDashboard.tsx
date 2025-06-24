@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import {useParams} from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Transaction, accountService, statementService } from '../api';
-import {useNotifications} from "../notification/Notifications";
-import './dashboard.css';
-import './modal.css';
+import { useNotifications } from "../hooks/useNotifications";
+import '../styles/dashboard.css';
+import '../styles/modal.css';
 
 const AccountDashboard = () => {
 
@@ -56,7 +56,7 @@ const AccountDashboard = () => {
 
         loadData();
 
-    }, [accountNumber]);
+    }, [accountNumber, addNotification]);
 
     const exportCSV = async () => {
         if (!accountNumber) return;

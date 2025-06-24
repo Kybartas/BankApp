@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Account, testDataService, statementService } from '../api';
-import ImportCSVButton from './ImportCSVButton';
-import {useNotifications} from "../notification/Notifications";
-import './dashboard.css';
+import ImportCSVButton from '../components/ImportCSVButton';
+import '../styles/dashboard.css';
+import {useNotifications} from "../hooks/useNotifications";
 
 const HomeDashboard = () => {
 
@@ -31,7 +31,7 @@ const HomeDashboard = () => {
 
         getAccounts();
 
-    }, [dbVersion]);
+    }, [dbVersion, addNotification]);
 
     const handlePopulateDB = async () => {
         setLoading(true);
@@ -70,7 +70,7 @@ const HomeDashboard = () => {
 
                 <h1>Home dashboard</h1>
 
-                <button className="button" onClick={handlePopulateDB}>
+                <button className="button" onClick={handlePopulateDB} disabled={loading}>
                     {'Populate database'}
                 </button>
                 <ImportCSVButton onImport={handleImportCSV}/>

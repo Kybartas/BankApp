@@ -1,15 +1,13 @@
 services:
   db:
     image: postgres:latest
-    container_name: bank_db
+    container_name: bank_db_aaa
     ports:
       - "5431:5432"
     environment:
       POSTGRES_USER: kybartas
       POSTGRES_PASSWORD: kybartas
       POSTGRES_DB: bank_db
-    networks:
-      - app-network
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U kybartas -d bank_db" ]
       interval: 5s
@@ -17,7 +15,7 @@ services:
       retries: 5
 
   api:
-    build: .  # Use Dockerfile
+    build: ./backend
     container_name: bank_api
     ports:
       - "8080:8080"
@@ -25,15 +23,13 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/bank_db
       SPRING_DATASOURCE_USERNAME: kybartas
       SPRING_DATASOURCE_PASSWORD: kybartas
-    networks:
-      - app-network
     depends_on:
       db:
         condition: service_healthy
 
   frontend:
     build: ./frontend
-    container_name: frontend
+    container_name: bank_frontend
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -46,7 +42,3 @@ services:
       - api
     stdin_open: true
     tty: true
-
-networks:
-  app-network:
-    driver: bridge
