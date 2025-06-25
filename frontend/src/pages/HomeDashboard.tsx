@@ -16,17 +16,11 @@ const HomeDashboard = () => {
     useEffect(() => {
 
         const getAccounts = async () => {
+
             setLoading(true);
-            try {
-                addNotification("Sending getAllAccounts request...", 'job');
-                const data = await testDataService.getAccounts();
-                addNotification("Accounts fetched!", "success");
-                setAccounts(data);
-            } catch (err) {
-                addNotification('Error fetching accounts: ' + err, 'error');
-            } finally {
-                setLoading(false);
-            }
+            const data = await testDataService.getAccounts({ log: addNotification });
+            setAccounts(data);
+            setLoading(false);
         };
 
         getAccounts();
@@ -35,32 +29,19 @@ const HomeDashboard = () => {
 
     const handlePopulateDB = async () => {
         setLoading(true);
-        try {
-            addNotification("Sending populate db request...", 'job');
-            const result = await testDataService.populateDB();
-            addNotification('API response: ' + result, 'success');
-            setDbVersion(prev => prev + 1);
-        } catch (err) {
-            addNotification("Error populating database: " + err, 'error');
-        } finally {
-            setLoading(false);
-        }
+        await testDataService.populateDB({ log: addNotification });
+        setDbVersion(prev => prev + 1);
+        setLoading(false);
     };
 
     const handleImportCSV = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if(!file) return;
+
         setLoading(true);
-        try {
-            addNotification("Sending import CSV request...", 'job');
-            await statementService.importCSV(file);
-            setDbVersion(prev => prev + 1);
-            addNotification('Statement imported successfully!', 'success');
-        } catch (err) {
-            addNotification('Error importing CSV: ' + err, 'error');
-        } finally {
-            setLoading(false);
-        }
+        await statementService.importCSV(file, { log: addNotification });
+        setDbVersion(prev => prev + 1);
+        setLoading(false);
     };
 
     return (

@@ -21,72 +21,42 @@ const AccountDashboard = () => {
 
         const getTransactions = async () => {
             if (!accountNumber) return;
-            
-            try {
-                const data = await accountService.getTransactions(accountNumber);
-                setTransactions(data);
-            } catch (err) {
-                addNotification('Error fetching transactions: ' + err, 'error');
-            }
+
+            const data = await accountService.getTransactions(accountNumber, { log: addNotification });
+            setTransactions(data);
         };
 
         const getBalance = async () => {
             if (!accountNumber) return;
-            
-            try {
-                const data = await accountService.getBalance(accountNumber);
-                setBalance(data);
-            } catch (err) {
-                addNotification('Error fetching balance: ' + err, 'error');
-            }
+
+            const data = await accountService.getBalance(accountNumber);
+            setBalance(data);
         };
 
-        const loadData = async () => {
-            if (!accountNumber) return;
-
-            addNotification(`Fetching data for ${accountNumber}...`, 'job');
-
-            await Promise.all([
-                getBalance(),
-                getTransactions()
-            ]);
-
-            addNotification(`${accountNumber} data fetched!`, 'success');
-        }
-
-        loadData();
+        getTransactions();
+        getBalance();
 
     }, [accountNumber, addNotification]);
 
     const exportCSV = async () => {
         if (!accountNumber) return;
 
-        try {
-            addNotification("Sending exportCSV request...", 'job')
-            statementService.exportCSV(accountNumber)
-            addNotification("Statement exported!", 'success');
-        } catch (err) {
-            addNotification("Error exporting CSV: " + err, 'error');
-        }
+        statementService.exportCSV(accountNumber, { log: addNotification });
     }
 
     const loadTransactionsByDate = async () => {
+
         if(!accountNumber || !fromDate || !toDate) {
             addNotification("Provide dates to load more transactions", "error");
             return;
         }
 
-        try {
-            const from = new Date(fromDate);
-            const to = new Date(toDate);
+        const from = new Date(fromDate);
+        const to = new Date(toDate);
 
-            addNotification(`Fetching dated transactions list for ${accountNumber}...`, 'job');
-            const newTransactionList = await accountService.getTransactionsByDate(accountNumber, from, to);
-            setTransactions(newTransactionList);
-            addNotification("Dated transactions fetched!", "success")
-        } catch (err) {
-            addNotification("Error fetching dated transactions: " + err, "error");
-        }
+        const newTransactionList
+            = await accountService.getTransactionsByDate(accountNumber, from, to, { log: addNotification });
+        setTransactions(newTransactionList);
     }
 
     return (
