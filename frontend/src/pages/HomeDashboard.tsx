@@ -8,7 +8,6 @@ import {useNotifications} from "../hooks/useNotifications";
 const HomeDashboard = () => {
 
     const [accounts, setAccounts] = useState<Account[]>([]);
-    const [dbVersion, setDbVersion] = useState(0);
     const [loading, setLoading] = useState(false);
 
     const { addNotification } = useNotifications();
@@ -25,14 +24,7 @@ const HomeDashboard = () => {
 
         getAccounts();
 
-    }, [dbVersion, addNotification]);
-
-    const handlePopulateDB = async () => {
-        setLoading(true);
-        await testDataService.populateDB({ log: addNotification });
-        setDbVersion(prev => prev + 1);
-        setLoading(false);
-    };
+    }, [addNotification]);
 
     const handleImportCSV = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -40,7 +32,6 @@ const HomeDashboard = () => {
 
         setLoading(true);
         await statementService.importCSV(file, { log: addNotification });
-        setDbVersion(prev => prev + 1);
         setLoading(false);
     };
 
@@ -51,9 +42,6 @@ const HomeDashboard = () => {
 
                 <h1>Home dashboard</h1>
 
-                <button className="button" onClick={handlePopulateDB} disabled={loading}>
-                    {'Populate database'}
-                </button>
                 <ImportCSVButton onImport={handleImportCSV}/>
 
             </div>

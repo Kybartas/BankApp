@@ -1,0 +1,34 @@
+.pane-container {
+    display: flex;
+    flex-direction: column;
+    color: white;
+
+    justify-content: flex-start;
+    align-items: center;
+
+    background-color: grey;
+    position: fixed;
+    height: 100vh;
+    width: 30vh;
+}
+
+.show-pane-button {
+    position: fixed;
+    justify-content: center;
+    border: none;
+    top: 50vh;
+    background-color: grey;
+    color: black;
+    cursor: pointer;
+}
+
+.close-pane-button {
+    position: fixed;
+    justify-content: center;
+    border: none;
+    top: 50vh;
+    background-color: grey;
+    color: black;
+    cursor: pointer;
+    left: 30vh;
+}
