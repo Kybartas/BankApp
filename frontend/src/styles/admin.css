@@ -1,34 +1,27 @@
 .pane-container {
     display: flex;
     flex-direction: column;
-    color: white;
 
     justify-content: flex-start;
     align-items: center;
 
-    background-color: grey;
-    position: fixed;
-    height: 100vh;
+    background-color: #30333d;
+    height: 80vh;
     width: 30vh;
+    margin: 20px;
+
+    border-radius: 20px;
 }
 
-.show-pane-button {
-    position: fixed;
-    justify-content: center;
-    border: none;
-    top: 50vh;
-    background-color: grey;
-    color: black;
+.pane-button {
+    padding: 8px 12px;
+    background-color: #2b2b36;
+    color: white;
+    font-size: inherit;
     cursor: pointer;
+    width: fit-content;
 }
 
-.close-pane-button {
-    position: fixed;
-    justify-content: center;
-    border: none;
-    top: 50vh;
-    background-color: grey;
-    color: black;
-    cursor: pointer;
-    left: 30vh;
+.pane-button:hover {
+    background-color: #5d6272;
 }

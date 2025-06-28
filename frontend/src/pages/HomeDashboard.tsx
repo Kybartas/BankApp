@@ -38,12 +38,13 @@ const HomeDashboard = () => {
     return (
         <div className="dashboard-container">
 
+
             <div className="dashboard-header">
-
                 <h1>Home dashboard</h1>
+            </div>
 
+            <div className="information-container">
                 <ImportCSVButton onImport={handleImportCSV}/>
-
             </div>
 
 
@@ -54,7 +55,6 @@ const HomeDashboard = () => {
                     <table className="data-table">
                         <thead>
                             <tr>
-                                <th>ID</th>
                                 <th>Account Number</th>
                                 <th>Balance</th>
                             </tr>
@@ -62,7 +62,6 @@ const HomeDashboard = () => {
                         <tbody>
                             {accounts.map((account) => (
                                 <tr key={account.id}>
-                                    <td>{account.id}</td>
                                     <td>
                                         <Link className="account-dashboard-link" to={`/${account.accountNumber}`}>
                                             {account.accountNumber}

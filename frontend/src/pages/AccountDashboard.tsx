@@ -64,16 +64,18 @@ const AccountDashboard = () => {
         <div className="dashboard-container">
 
             <div className="dashboard-header">
-
                 <h1>Account {accountNumber} dashboard</h1>
+            </div>
 
-                <h1>Balance: {balance}</h1>
+            <div className="information-container">
+
+                <h2>Balance: {balance}</h2>
 
                 <button className="button" onClick={exportCSV}>
                     Download CSV statement
                 </button>
 
-                <button className="button" onClick={ () => setShowDateModal(true) }>
+                <button className="button" onClick={() => setShowDateModal(true)}>
                     View more transactions
                 </button>
 
@@ -108,28 +110,20 @@ const AccountDashboard = () => {
                     <table className="data-table">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Account Number</th>
                                 <th>Date</th>
                                 <th>Beneficiary</th>
                                 <th>Description</th>
                                 <th>Amount</th>
-                                <th>Currency</th>
-                                <th>Type</th>
                             </tr>
                         </thead>
                         <tbody>
                             {transactions.map((transaction) => (
                                 <tr key={transaction.id}>
-                                    <td>{transaction.id}</td>
-                                    <td>{transaction.accountNumber}</td>
                                     <td>{transaction.date}</td>
                                     <td>{transaction.beneficiary}</td>
                                     <td>{transaction.description}</td>
-                                    <td>{transaction.amount}</td>
-                                    <td>{transaction.currency}</td>
                                     <td className={transaction.type === "K" ? "positive" : "negative"}>
-                                        {transaction.type}
+                                        {transaction.type === "K" ? transaction.amount : "-" + transaction.amount}
                                     </td>
                                 </tr>
                             ))}

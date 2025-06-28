@@ -17,9 +17,9 @@ root.render(
     <NotificationProvider>
         <BrowserRouter>
 
-            <AdminPane/>
+            <Header/>
             <div className="App">
-                <Header/>
+                <AdminPane/>
                 <Routes>
                     <Route path="/" element={<HomeDashboard/>}/>
                     <Route path="/:accountNumber" element={<AccountDashboard/>}/>

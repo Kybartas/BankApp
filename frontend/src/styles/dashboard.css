@@ -1,34 +1,53 @@
 .dashboard-container {
     display: flex;
-    background-color: #30333d;
     flex-direction: column;
+
     justify-content: flex-start;
-    min-height: 90vh;
-    overflow: scroll;
-    font-size: calc(3vmin + 10px);
+    align-items: flex-start;
+
+    background-color: #30333d;
+    height: 80vh;
+    width: 130vh;
+    margin: 20px;
+
+    border-radius: 20px;
+}
+
+.dashboard-container h1, h2, h3 {
+    margin-left: 20px;
 }
 
 .dashboard-header {
+    margin: 10px;
     display: flex;
-    height: 10vh;
-    background-color: #2b2e38;
-    align-items: center;
-    justify-content: flex-start;
     flex-direction: row;
+
+    justify-content: inherit;
+    align-items: center;
+
+    height: 5vh;
+    width: 130vh;
 }
 
-.dashboard-header h1 {
-    padding: 20px;
-    text-align: center;
-    font-size: calc(3vmin + 10px);
+.information-container {
+    margin: 10px;
+    display: flex;
+    flex-direction: row;
+
+    justify-content: inherit;
+    align-items: center;
+
+    height: 5vh;
+    width: 130vh;
+    border-bottom: #3b82f6;
 }
 
 .button {
-    /*margin-right: 20px;*/
+    margin-left: 20px;
     padding: 8px 12px;
     background-color: #2b2b36;
     color: white;
-    font-size: calc(1.5vmin + 10px);
+    font-size: inherit;
     cursor: pointer;
     width: fit-content;
 }
@@ -38,19 +57,16 @@
 }
 
 .data-container {
-    padding: 20px;
     display: flex;
+    flex-direction: column;
+
+    margin-left: 30px;
+    margin-right: 30px;
     font-size: calc(1vmin + 10px);
     text-align: left;
-}
-
-.account-dashboard-link {
-    color: #a1d0da;
-    text-decoration: none;
-}
-
-.account-dashboard-link:hover {
-    color: #dadada;
+    overflow: auto;
+    max-height: 60vh;
+    flex: 1;
 }
 
 .data-table {
@@ -71,15 +87,19 @@
     font-weight: bold;
 }
 
-.data-table th:nth-child(1), .data-table td:nth-child(1) {
-    font-size: calc(0.75vmin + 10px);
-    width: 20%;
-}
-
 .positive {
     color: #54d06d;
 }
 
 .negative {
     color: #935050;
+}
+
+.account-dashboard-link {
+    color: #bb7ed7;
+    text-decoration: none;
+}
+
+.account-dashboard-link:hover {
+    color: #dadada;
 }
