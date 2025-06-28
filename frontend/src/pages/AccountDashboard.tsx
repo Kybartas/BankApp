@@ -4,6 +4,8 @@ import { Transaction, accountService, statementService } from '../api';
 import { useNotifications } from "../hooks/useNotifications";
 import '../styles/dashboard.css';
 import '../styles/modal.css';
+import '../styles/base.css';
+import LoadingDots from "../components/LoadingDots";
 
 const AccountDashboard = () => {
 
@@ -14,6 +16,7 @@ const AccountDashboard = () => {
     const [fromDate, setFromDate] = useState<string>("");
     const [toDate, setToDate] = useState<string>("");
     const [showDateModal, setShowDateModal] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const { addNotification } = useNotifications();
 
@@ -33,8 +36,10 @@ const AccountDashboard = () => {
             setBalance(data);
         };
 
+        setLoading(true);
         getTransactions();
         getBalance();
+        setLoading(false);
 
     }, [accountNumber, addNotification]);
 
@@ -51,6 +56,8 @@ const AccountDashboard = () => {
             return;
         }
 
+        setShowDateModal(false);
+        
         const from = new Date(fromDate);
         const to = new Date(toDate);
 
@@ -63,9 +70,7 @@ const AccountDashboard = () => {
 
         <div className="dashboard-container">
 
-            <div className="dashboard-header">
-                <h1>Account {accountNumber} dashboard</h1>
-            </div>
+            <h1>Account {accountNumber} dashboard</h1>
 
             <div className="information-container">
 
@@ -84,26 +89,34 @@ const AccountDashboard = () => {
 
             {showDateModal && (
                 <div className="modal-overlay">
+
+                    <h1>Select Date Range</h1>
+
                     <div className="modal-content">
-                        <h2>Select Date Range</h2>
+
                         <label>
                             From:
-                            <input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} />
+                            <input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)}/>
                         </label>
                         <label>
                             To:
-                            <input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} />
+                            <input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)}/>
                         </label>
                         <div className="modal-buttons">
-                            <button className="button" onClick={loadTransactionsByDate}>Confirm</button>
-                            <button className="button cancel" onClick={() => setShowDateModal(false)}>Cancel</button>
+                            <button className="button cancel" onClick={() => setShowDateModal(false)}>
+                                Cancel
+                            </button>
+                            
+                            <button className="button" onClick={loadTransactionsByDate}>
+                                Confirm
+                            </button>
                         </div>
                     </div>
                 </div>
             )}
 
 
-            {transactions.length === 0 ? (<p>No statements found</p>) : (
+            {loading ? (<LoadingDots/>) : transactions.length === 0 ? (<p>No transactions found</p>) :(
 
                 <div className="data-container">
 
@@ -129,9 +142,7 @@ const AccountDashboard = () => {
                             ))}
                         </tbody>
                     </table>
-
                 </div>
-
             )}
 
         </div>

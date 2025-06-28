@@ -4,6 +4,8 @@ import { Account, testDataService, statementService } from '../api';
 import ImportCSVButton from '../components/ImportCSVButton';
 import '../styles/dashboard.css';
 import {useNotifications} from "../hooks/useNotifications";
+import LoadingDots from "../components/LoadingDots";
+import '../styles/base.css';
 
 const HomeDashboard = () => {
 
@@ -38,17 +40,14 @@ const HomeDashboard = () => {
     return (
         <div className="dashboard-container">
 
-
-            <div className="dashboard-header">
-                <h1>Home dashboard</h1>
-            </div>
+            <h1>Home dashboard</h1>
 
             <div className="information-container">
                 <ImportCSVButton onImport={handleImportCSV}/>
             </div>
 
 
-            {loading ? (<p>Loading accounts...</p>) : accounts.length === 0 ? (<p>No accounts found</p>) : (
+            {loading ? (<LoadingDots/>) : accounts.length === 0 ? (<p>No accounts found</p>) : (
 
                 <div className="data-container">
 

@@ -3,6 +3,7 @@ import "../styles/admin.css"
 import {testDataService} from "../api";
 import {useNotifications} from "../hooks/useNotifications";
 import LoadingDots from "./LoadingDots";
+import '../styles/base.css';
 
 const AdminPane = () => {
 
@@ -22,7 +23,7 @@ const AdminPane = () => {
 
             <h1>Admin panel</h1>
 
-            <button className="pane-button" onClick={handlePopulateDB}>
+            <button className="button" onClick={handlePopulateDB}>
                 {'Populate database'}
             </button>
 

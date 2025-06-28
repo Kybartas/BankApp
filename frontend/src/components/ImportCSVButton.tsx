@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import '../styles/base.css';
 
 interface ImportCSVButtonProps {
     onImport: (event: React.ChangeEvent<HTMLInputElement>) => void;

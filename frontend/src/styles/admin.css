@@ -8,20 +8,8 @@
     background-color: #30333d;
     height: 80vh;
     width: 30vh;
-    margin: 20px;
+    margin: 1rem;
+    gap: 1rem;
 
     border-radius: 20px;
-}
-
-.pane-button {
-    padding: 8px 12px;
-    background-color: #2b2b36;
-    color: white;
-    font-size: inherit;
-    cursor: pointer;
-    width: fit-content;
-}
-
-.pane-button:hover {
-    background-color: #5d6272;
 }

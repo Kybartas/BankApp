@@ -8,6 +8,11 @@ Banking application for learning full-stack development with Spring Boot, React.
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-336791?logo=postgresql)
 ![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker)
 
+# Screenshots
+
+![Screenshot 2025-06-28 at 22.27.17 (2).png](demo/Screenshot%202025-06-28%20at%2022.27.17%20%282%29.png)
+![Screenshot 2025-06-28 at 22.27.32 (2).png](demo/Screenshot%202025-06-28%20at%2022.27.32%20%282%29.png)
+
 # Quick Start
 
 ### Prerequisites
@@ -18,16 +23,20 @@ Banking application for learning full-stack development with Spring Boot, React.
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/Kybartas/BankApp
+   git clone https://github.com/Kybartas/bankApp
+   ```
+
+2. **Navigate to the project**
+   ```bash
    cd BankApp
    ```
 
-2. **Start the application**
+3. **Start the application**
    ```bash
    docker compose up --build
    ```
 
-3. **Access the application**
+4. **Access the application**
    - Frontend: http://localhost:3000
 
 # Tech Stack
