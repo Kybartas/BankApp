@@ -14,6 +14,7 @@ type NotificationContextType = {
 export const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
 
 export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+
     const [notifications, setNotifications] = useState<Notification[]>([]);
 
     const removeNotification = useCallback((id: number) => {

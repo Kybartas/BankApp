@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import "../styles/admin.css"
-import {testDataService} from "../api";
+import {testDataService} from "../service/testDataService";
 import {useNotifications} from "../hooks/useNotifications";
 import LoadingDots from "./LoadingDots";
 import '../styles/base.css';

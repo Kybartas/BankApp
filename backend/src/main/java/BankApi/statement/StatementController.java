@@ -10,7 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 
-@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/bankApi/statement")
 public class StatementController {

@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Account, testDataService, statementService } from '../api';
+
+import { testDataService } from "../service/testDataService";
+import { statementService } from "../service/statementService";
+import { Account } from "../types/types";
+
 import ImportCSVButton from '../components/ImportCSVButton';
 import '../styles/dashboard.css';
 import {useNotifications} from "../hooks/useNotifications";
@@ -43,7 +47,7 @@ const HomeDashboard = () => {
             <h1>Home dashboard</h1>
 
             <div className="information-container">
-                <ImportCSVButton onImport={handleImportCSV}/>
+                <ImportCSVButton onImport={ handleImportCSV }/>
             </div>
 
 

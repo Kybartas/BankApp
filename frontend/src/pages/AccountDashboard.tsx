@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Transaction, accountService, statementService } from '../api';
+
+import { accountService } from "../service/accountService";
+import { statementService } from "../service/statementService";
+import { Transaction } from "../types/types";
+
 import { useNotifications } from "../hooks/useNotifications";
 import '../styles/dashboard.css';
 import '../styles/modal.css';
@@ -46,7 +50,7 @@ const AccountDashboard = () => {
     const exportCSV = async () => {
         if (!accountNumber) return;
 
-        statementService.exportCSV(accountNumber, { log: addNotification });
+        await statementService.exportCSV(accountNumber, { log: addNotification });
     }
 
     const loadTransactionsByDate = async () => {

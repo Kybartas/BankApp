@@ -8,6 +8,9 @@ import HomeDashboard from "./pages/HomeDashboard";
 import AccountDashboard from "./pages/AccountDashboard";
 import AdminPane from "./components/AdminPane";
 import './styles/index.css';
+import Login from "./pages/Login";
+import {AuthProvider} from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -15,18 +18,34 @@ const root = ReactDOM.createRoot(
 
 root.render(
     <NotificationProvider>
-        <BrowserRouter>
+        <AuthProvider>
+            <BrowserRouter>
 
-            <Header/>
-            <div className="App">
-                <AdminPane/>
-                <Routes>
-                    <Route path="/" element={<HomeDashboard/>}/>
-                    <Route path="/:accountNumber" element={<AccountDashboard/>}/>
-                </Routes>
-            </div>
+                <Header/>
+                <div className = "App">
+                    <AdminPane/>
+                    <Routes>
 
-        </BrowserRouter>
+                        <Route path = "/" element = {
+                            <ProtectedRoute>
+                                <HomeDashboard/>
+                            </ProtectedRoute>
+                        }/>
+                        <Route path = "/login" element = { <Login/> }/>
+                        <Route path = "/:accountNumber" element = {
+                            <ProtectedRoute>
+                                <AccountDashboard/>
+                            </ProtectedRoute>
+                        }/>
+
+                        {/*<Route path = "/" element = { <HomeDashboard/> }/>*/}
+                        {/*<Route path = "/login" element = { <Login/> }/>*/}
+                        {/*<Route path = "/:accountNumber" element = { <AccountDashboard/> }/>*/}
+                    </Routes>
+                </div>
+
+            </BrowserRouter>
+        </AuthProvider>
         <NotificationContainer/>
     </NotificationProvider>
 );
