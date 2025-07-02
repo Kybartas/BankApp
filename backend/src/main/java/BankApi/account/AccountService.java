@@ -41,25 +41,45 @@ public class AccountService {
         return transactionRepository.findTop20ByAccountNumberOrderByDateDesc(accountNumber);
     }
 
-    public void newTransaction(Transaction transaction) {
+    public String openAccount() {
 
-        Account account;
-        BigDecimal newBalance;
+        long accountCount = accountRepository.count();
+        Account newAccount = new Account("LT" + accountCount);
 
-        try {
-            account = getAccount(transaction.getAccountNumber());
-        } catch (AccountNotFoundException e) {
-            account = new Account(transaction.getAccountNumber());
-        }
+        Account savedAccount = accountRepository.save(newAccount);
 
-        if (transaction.getType().equals("K")) {
-            newBalance = account.getBalance().add(transaction.getAmount());
-        } else {
-            newBalance = account.getBalance().subtract(transaction.getAmount()) ;
-        }
+        return savedAccount.getId();
+    }
 
-        account.setBalance(newBalance);
-        transactionRepository.save(transaction);
-        accountRepository.save(account);
+    public void processPayment(String senderAccountNumber, String recipientAccountNumber, BigDecimal amount) {
+
+        Account sender = accountRepository.findAccountByAccountNumber(senderAccountNumber).orElseThrow();
+        Account recipient = accountRepository.findAccountByAccountNumber(recipientAccountNumber).orElseThrow();
+
+        Transaction senderTransaction = new Transaction();
+        senderTransaction.setAccountNumber(senderAccountNumber);
+        senderTransaction.setDate(LocalDate.now());
+        senderTransaction.setBeneficiary(recipientAccountNumber);
+        senderTransaction.setDescription("Description");
+        senderTransaction.setAmount(amount);
+        senderTransaction.setCurrency("EUR");
+        senderTransaction.setType("D");
+
+        Transaction recipientTransaction = new Transaction();
+        recipientTransaction.setAccountNumber(recipientAccountNumber);
+        recipientTransaction.setDate(LocalDate.now());
+        recipientTransaction.setBeneficiary(senderAccountNumber);
+        recipientTransaction.setDescription("Description");
+        recipientTransaction.setAmount(amount);
+        recipientTransaction.setCurrency("EUR");
+        recipientTransaction.setType("K");
+
+        sender.setBalance(sender.getBalance().subtract(amount));
+        recipient.setBalance(recipient.getBalance().add(amount));
+
+        transactionRepository.save(senderTransaction);
+        transactionRepository.save(recipientTransaction);
+        accountRepository.save(sender);
+        accountRepository.save(recipient);
     }
 }

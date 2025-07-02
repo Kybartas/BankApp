@@ -13,9 +13,5 @@ public interface AccountRepository extends JpaRepository<Account, String> {
            """)
     Optional<Account> findAccountByAccountNumber(String accountNumber);
 
-    @Query(value = """
-            SELECT * FROM account
-            ORDER BY account_number
-            """, nativeQuery = true)
-    List<Account> getAllAccountsOrdered();
+    Account getAccountById(String id);
 }

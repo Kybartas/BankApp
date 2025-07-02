@@ -1,11 +1,11 @@
-import {LoginRequest, RegisterRequest, AuthResponse, Notify} from "../types/types";
+import {LoginRequest, RegisterRequest, AuthResponse, MakeLog} from "../types";
 import { API_BASE_URL } from "./utils";
 
 export const authService = {
 
-    login: async (credentials: LoginRequest, notify?: Notify): Promise<AuthResponse> => {
+    login: async (credentials: LoginRequest, makeLog?: MakeLog): Promise<AuthResponse> => {
 
-        notify?.log(`Sending login request...`, `job`);
+        makeLog?.log(`info`, `Sending login request...`, `authService`);
 
         const start = performance.now();
 
@@ -21,14 +21,16 @@ export const authService = {
         const end = performance.now();
 
         if (!response.ok) {
-            notify?.log(data.message || 'Login failed', `error`);
+            makeLog?.log(`error`, `Failed to login: ${ await response.text() }`, `authService`);
         }
 
-        notify?.log(`Logged in!: ${ Math.trunc(end - start) }ms`, `success`);
+        makeLog?.log(`success`, `Logged in! ${ Math.trunc(end - start) }ms`, `authService`);
         return data;
     },
 
-    register: async (userData: RegisterRequest, notify?: Notify): Promise<AuthResponse> => {
+    register: async (userData: RegisterRequest, makeLog?: MakeLog): Promise<AuthResponse> => {
+
+        makeLog?.log(`info`, `Sending register request...`, `authService`);
 
         const start = performance.now();
 
@@ -44,10 +46,10 @@ export const authService = {
         const end = performance.now();
 
         if (!response.ok) {
-            notify?.log(data.message || 'Register failed', `error`);
+            makeLog?.log(`error`, `Failed to register: ${ await response.text() }`, `authService`);
         }
 
-        notify?.log(`Registered and logged in!: ${ Math.trunc(end - start) }ms`, `success`);
+        makeLog?.log(`success`, `Registered! ${ Math.trunc(end - start) }ms`, `authService`);
         return data;
     }
 };

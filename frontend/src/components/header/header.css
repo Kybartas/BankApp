@@ -1,7 +1,7 @@
 .header-container {
     display: flex;
     height: 10vh;
-    background-color: #282c34;
+    background-color: #1a1a1a;
     align-items: center;
     justify-content: space-between;
     font-size: 1.25rem;

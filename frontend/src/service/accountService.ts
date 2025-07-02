@@ -1,4 +1,4 @@
-import { Notify, Transaction } from "../types/types"
+import { MakeLog, Transaction } from "../types"
 import { getAuthHeaders, API_BASE_URL } from "./utils";
 
 export const accountService = {
@@ -15,9 +15,9 @@ export const accountService = {
         return response.json();
     },
 
-    getTransactions: async (accountNumber: string, notify?: Notify): Promise<Transaction[]> => {
+    getTransactions: async (accountNumber: string, makeLog?: MakeLog): Promise<Transaction[]> => {
 
-        notify?.log(`Sending getTransactions request...`, `job`);
+        makeLog?.log(`info`, `Sending getTransactions request...`, `accountService`);
 
         const start = performance.now();
         const response = await fetch(`${API_BASE_URL}/bankApi/account/getTransactions?accountNumber=${accountNumber}`, {
@@ -26,18 +26,18 @@ export const accountService = {
         const end = performance.now();
 
         if(!response.ok) {
-            notify?.log(`Failed to getTransactions: ${ await response.text() }`, `error`);
+            makeLog?.log(`error`, `Failed to getTransactions: ${ await response.text() }`, `accountService`);
             return [];
         }
 
-        notify?.log(`Transactions fetched!: ${ Math.trunc(end - start) }ms`, `success`);
+        makeLog?.log(`success`, `Transactions fetched! ${ Math.trunc(end - start) }ms`, `accountService`);
 
         return response.json();
     },
 
-    getTransactionsByDate: async (accountNumber: string, from: Date, to: Date, notify?: Notify): Promise<Transaction[]> => {
+    getTransactionsByDate: async (accountNumber: string, from: Date, to: Date, makeLog?: MakeLog): Promise<Transaction[]> => {
 
-        notify?.log(`Sending getTransactionsByDate request...`, `job`);
+        makeLog?.log(`info`, `Sending getTransactions with dates request...`, `accountService`);
 
         const start = performance.now();
         const response = await fetch(`${API_BASE_URL}/bankApi/account/getTransactions?accountNumber=${accountNumber}&from=${from.toISOString().split('T')[0]}&to=${to.toISOString().split('T')[0]}`, {
@@ -46,12 +46,30 @@ export const accountService = {
         const end = performance.now();
 
         if(!response.ok) {
-            notify?.log(`Failed to getTransactionsByDate: ${ await response.text() }`, `error`);
+            makeLog?.log(`error`, `Failed to getTransactions with dates: ${ await response.text() }`, `accountService`);
             return [];
         }
 
-        notify?.log(`Transactions fetched!: ${ Math.trunc(end - start) }ms`, `success`);
+        makeLog?.log(`success`, `Transactions fetched! ${ Math.trunc(end - start) }ms`, `accountService`);
 
         return response.json();
+    },
+
+    makePayment: async (sender: string, recipient: string, amount: number, makeLog?: MakeLog): Promise<void> => {
+
+        makeLog?.log(`info`, `Sending pay request...`, `accountService`);
+
+        const start = performance.now();
+        const response = await fetch(`${API_BASE_URL}/bankApi/account/pay?sender=${sender}&recipient=${recipient}&amount=${amount}`, {
+            headers: getAuthHeaders()
+        });
+        const end = performance.now();
+
+        if(!response.ok) {
+            makeLog?.log(`error`, `Failed to transfer funds: ${ await response.text() }`, `accountService`);
+        }
+
+        makeLog?.log(`success`, `Funds transferred! ${ Math.trunc(end - start) }ms`, `accountService`);
+
     }
 }

@@ -21,10 +21,6 @@ export interface Transaction {
     type: string;
 }
 
-export interface Notify {
-    log: (msg: string, type: 'job' | 'success' | 'error') => void;
-}
-
 // dto
 
 export interface LoginRequest {
@@ -41,4 +37,19 @@ export interface AuthResponse {
     token: string;
     username: string;
     message?: string;
+}
+
+// asd
+
+export interface Log {
+    id: number;
+    timestamp: string;
+    type: 'info' | 'success' | 'warning' | 'error';
+    message: string;
+    source: string;
+    details?: string;
+}
+
+export interface MakeLog {
+    log: (type: 'info' | 'success' | 'warning' | 'error', msg: string, source: string) => void
 }

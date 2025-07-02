@@ -1,5 +1,6 @@
 package BankApi.user;
 
+import BankApi.account.Account;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,6 +19,9 @@ public class User implements UserDetails {
 
     private String username;
     private String password;
+
+    @ElementCollection
+    private List<String> accountIds;
 
     private LocalDateTime createdAt;
     private boolean enabled = true;
@@ -61,6 +65,13 @@ public class User implements UserDetails {
     @Override
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
+
+    public List<String> getAccountIds() {
+        return accountIds;
+    }
+    public void addAccount(String accountId) {
+        accountIds.add(accountId);
+    }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
-import LoginForm from '../components/LoginForm';
-import RegisterForm from '../components/RegisterForm';
+import { useAuth } from '../../../hooks/useAuth';
+import LoginForm from './LoginForm';
+import RegisterForm from './RegisterForm';
 
 const Login = () => {
     const [isLogin, setIsLogin] = useState(true);
@@ -16,7 +16,7 @@ const Login = () => {
         }
     }, [isAuthenticated, navigate]);
 
-    // Don't render anything if already authenticated
+
     if (isAuthenticated) {
         return null;
     }

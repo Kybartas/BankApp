@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from "../hooks/useAuth";
-import '../styles/header.css';
+import { useAuth } from "../../hooks/useAuth";
+import './header.css';
 
 const Header = () => {
 

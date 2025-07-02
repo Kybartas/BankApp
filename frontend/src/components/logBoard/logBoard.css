@@ -1,0 +1,52 @@
+:root {
+    --color-info: grey;
+    --color-success: #4caf50;
+    --color-warning: #ff9800;
+    --color-error: #f44336;
+}
+
+.log-container {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+
+    background-color: #1a1a1a;
+    height: 80vh;
+    width: 40vh;
+    margin: 1rem;
+    padding: 1rem;
+    gap: 1rem;
+
+    border-radius: 20px;
+}
+
+.log-entries {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.5rem;
+}
+
+.log-entry {
+    display: flex;
+    flex-direction: column;
+    padding: 0.5rem;
+    border-radius: 1rem;
+    border: 0.5rem solid;
+    transition: all 0.5s ease;
+    margin-bottom: 0.5rem;
+}
+
+.log-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.25rem;
+    font-size: 0.75rem;
+    color: #888;
+}
+
+.log-message {
+    font-size: 1rem;
+    color: #fff;
+}

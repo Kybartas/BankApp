@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
-import { accountService } from "../service/accountService";
-import { statementService } from "../service/statementService";
-import { Transaction } from "../types/types";
+import { accountService } from "../../../service/accountService";
+import { statementService } from "../../../service/statementService";
+import { Transaction } from "../../../types";
 
-import { useNotifications } from "../hooks/useNotifications";
-import '../styles/dashboard.css';
-import '../styles/modal.css';
-import '../styles/base.css';
-import LoadingDots from "../components/LoadingDots";
+import { useLogs } from "../../../hooks/useLogs";
+import '../mainDashboard.css';
+import './modal.css';
+import '../../../styles/base.css';
+import LoadingDots from "../../common/loadingDots/LoadingDots";
 
 const AccountDashboard = () => {
 
@@ -20,16 +20,18 @@ const AccountDashboard = () => {
     const [fromDate, setFromDate] = useState<string>("");
     const [toDate, setToDate] = useState<string>("");
     const [showDateModal, setShowDateModal] = useState(false);
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [recipientAccount, setRecipientAccount] = useState("");
+    const [amount, setAmount] = useState("");
 
-    const { addNotification } = useNotifications();
+    const { addLog } = useLogs();
 
     useEffect(() => {
-
         const getTransactions = async () => {
             if (!accountNumber) return;
 
-            const data = await accountService.getTransactions(accountNumber, { log: addNotification });
+            const data = await accountService.getTransactions(accountNumber, { log: addLog });
             setTransactions(data);
         };
 
@@ -44,41 +46,64 @@ const AccountDashboard = () => {
         getTransactions();
         getBalance();
         setLoading(false);
-
-    }, [accountNumber, addNotification]);
+    }, [accountNumber, addLog]);
 
     const exportCSV = async () => {
         if (!accountNumber) return;
-
-        await statementService.exportCSV(accountNumber, { log: addNotification });
-    }
+        await statementService.exportCSV(accountNumber, { log: addLog });
+    };
 
     const loadTransactionsByDate = async () => {
-
-        if(!accountNumber || !fromDate || !toDate) {
-            addNotification("Provide dates to load more transactions", "error");
+        if (!accountNumber || !fromDate || !toDate) {
+            addLog(`warning`, `Provide a date range to load more transactions`, `loadTransactionsByDate`);
             return;
         }
 
         setShowDateModal(false);
-        
         const from = new Date(fromDate);
         const to = new Date(toDate);
 
-        const newTransactionList
-            = await accountService.getTransactionsByDate(accountNumber, from, to, { log: addNotification });
+        const newTransactionList = await accountService.getTransactionsByDate(
+            accountNumber, 
+            from, 
+            to, 
+            { log: addLog }
+        );
         setTransactions(newTransactionList);
-    }
+    };
+
+    const handlePayment = async () => {
+        if (!accountNumber || !recipientAccount || !amount) {
+            addLog(`warning`, `Fill in all fields`, `handlePayment`);
+            return;
+        }
+        setShowPaymentModal(false);
+        setLoading(true);
+        await accountService.makePayment(accountNumber, recipientAccount, parseFloat(amount), { log: addLog });
+        // Refresh transactions and balance
+        await Promise.all([
+            accountService.getTransactions(accountNumber, { log: addLog }),
+            accountService.getBalance(accountNumber)
+        ]).then(([transactions, balance]) => {
+            setTransactions(transactions);
+            setBalance(balance);
+        });
+        setLoading(false);
+    };
 
     return (
 
         <div className="dashboard-container">
 
-            <h1>Account {accountNumber} dashboard</h1>
+            <h1>{accountNumber} dashboard</h1>
 
             <div className="information-container">
 
                 <h2>Balance: {balance}</h2>
+
+                <button className="button" onClick={() => setShowPaymentModal(true)}>
+                    Transfer funds
+                </button>
 
                 <button className="button" onClick={exportCSV}>
                     Download CSV statement
@@ -90,11 +115,41 @@ const AccountDashboard = () => {
 
             </div>
 
+            {showPaymentModal && (
+                <div className="modal-overlay">
+
+                    <h1>Transfer funds</h1>
+
+                    <div className="modal-content">
+                        
+                            <label>
+                                Recipient Account:
+                                <input type="text" value={recipientAccount} onChange={(e) => setRecipientAccount(e.target.value)} placeholder="LT123"/>
+                            </label>
+
+                            <label>
+                                Amount:
+                                <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)}/>
+                            </label>
+
+                        <div className="modal-buttons">
+                            <button className="button" onClick={() => setShowPaymentModal(false)}>
+                                Cancel
+                            </button>
+
+                            <button className="button" onClick={handlePayment}>
+                                Transfer
+                            </button>
+                        </div>                        
+                        
+                    </div>
+                </div>
+            )}
 
             {showDateModal && (
                 <div className="modal-overlay">
 
-                    <h1>Select Date Range</h1>
+                    <h1>View more transactions</h1>
 
                     <div className="modal-content">
 
@@ -102,12 +157,14 @@ const AccountDashboard = () => {
                             From:
                             <input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)}/>
                         </label>
+
                         <label>
                             To:
                             <input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)}/>
                         </label>
+
                         <div className="modal-buttons">
-                            <button className="button cancel" onClick={() => setShowDateModal(false)}>
+                            <button className="button" onClick={() => setShowDateModal(false)}>
                                 Cancel
                             </button>
                             
@@ -115,6 +172,7 @@ const AccountDashboard = () => {
                                 Confirm
                             </button>
                         </div>
+                        
                     </div>
                 </div>
             )}
@@ -128,7 +186,7 @@ const AccountDashboard = () => {
                         <thead>
                             <tr>
                                 <th>Date</th>
-                                <th>Beneficiary</th>
+                                <th>Sender/Recipient</th>
                                 <th>Description</th>
                                 <th>Amount</th>
                             </tr>

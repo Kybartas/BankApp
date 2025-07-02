@@ -1,11 +1,11 @@
-import { Notify } from "../types/types"
+import {MakeLog} from "../types"
 import { getAuthHeaders, API_BASE_URL } from "./utils";
 
 export const statementService = {
 
-    exportCSV: async (accountNumber: string, notify?: Notify): Promise<void> => {
+    exportCSV: async (accountNumber: string, makeLog?: MakeLog): Promise<void> => {
 
-        notify?.log(`Sending exportCSV request...`, `job`);
+        makeLog?.log(`info`, `Sending exportCSV request...`, `statementService`);
 
         const start = performance.now();
         const response = await fetch(`${API_BASE_URL}/bankApi/statement/exportCSV?accountNumber=${accountNumber}`, {
@@ -14,7 +14,7 @@ export const statementService = {
         const end = performance.now();
 
         if(!response.ok) {
-            notify?.log(`Failed to export CSV: ${ await response.text() }`, `error`);
+            makeLog?.log(`error`, `Failed to exportCSV: ${ await response.text() }`, `statementService`);
             return;
         }
 
@@ -25,29 +25,6 @@ export const statementService = {
         a.download = accountNumber + "_statement.csv";
         a.click();
 
-        notify?.log(`CSV exported!: ${ Math.trunc(end - start) }ms`, `success`);
-    },
-
-    importCSV: async (file: File, notify?: Notify): Promise<void> => {
-
-        const formData = new FormData();
-        formData.append("file", file);
-
-        notify?.log(`Sending importCSV request...`, `job`);
-
-        const start = performance.now();
-        const response = await fetch(`${API_BASE_URL}/bankApi/statement/importCSV`, {
-            method: "POST",
-            headers: getAuthHeaders(),
-            body: formData
-        });
-        const end = performance.now();
-
-        if(!response.ok) {
-            notify?.log(`Failed to import CSV: ${ await response.text() }`, `error`);
-            return;
-        }
-
-        notify?.log(`CSV imported!: ${ Math.trunc(end - start) }ms`, `success`);
+        makeLog?.log(`success`, `CSV exported! ${ Math.trunc(end - start) }ms`, `statementService`);
     }
 }

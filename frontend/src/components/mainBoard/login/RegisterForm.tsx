@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { useAuth } from '../hooks/useAuth';
-import { authService } from '../service/authService';
-import { useNotifications } from '../hooks/useNotifications';
-import '../styles/loginForm.css';
+import { useAuth } from '../../../hooks/useAuth';
+import { authService } from '../../../service/authService';
+import { useLogs } from '../../../hooks/useLogs';
+import './login.css';
 
 interface RegisterFormProps {
     onSuccess?: () => void;
@@ -16,23 +16,23 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onSwitchToLogin 
     const [isLoading, setIsLoading] = useState(false);
 
     const { login } = useAuth();
-    const { addNotification } = useNotifications();
+    const { addLog } = useLogs();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (!username.trim() || !password.trim() || !confirmPassword.trim()) {
-            addNotification('Please fill in all fields', 'error');
+            addLog(`warning`, `Please fill in all fields`, `register`);
             return;
         }
 
         if (password !== confirmPassword) {
-            addNotification('Passwords do not match', 'error');
+            addLog(`warning`, `Passwords do not match`, `register`);
             return;
         }
 
         if (password.length < 6) {
-            addNotification('Password must be at least 6 characters long', 'error');
+            addLog(`warning`, `Password must be at least 6 characters long`, `register`);
             return;
         }
 
@@ -40,7 +40,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onSwitchToLogin 
 
         try {
 
-            const response = await authService.register({ username, password }, { log: addNotification });
+            const response = await authService.register({ username, password }, { log: addLog });
 
             // Login through context
             login({ username: username }, response.token);
@@ -53,8 +53,9 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onSwitchToLogin 
     };
 
     return (
-        <div className="auth-card">
-            <h2>Register</h2>
+        <div>
+            <h1>Register</h1>
+
             <form onSubmit={handleSubmit} className="auth-form">
                 <div className="form-group">
                     <label htmlFor="username">name</label>

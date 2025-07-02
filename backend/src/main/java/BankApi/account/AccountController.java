@@ -20,21 +20,6 @@ public class AccountController {
         this.accountService = accountService;
     }
 
-    @GetMapping("/getAccount")
-    public ResponseEntity<?> getAccount(
-            @RequestParam("accountNumber") String accountNumber) {
-
-        Account account;
-        try {
-            account = accountService.getAccount(accountNumber);
-            return ResponseEntity.ok(account);
-
-        } catch (AccountNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Failed to find account: " + accountNumber + " " + e.getMessage());
-        }
-    }
-
     @GetMapping("/getBalance")
     public ResponseEntity<?> getBalance(
             @RequestParam("accountNumber") String accountNumber,
@@ -65,6 +50,21 @@ public class AccountController {
         } catch (AccountNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Failed to find account: " + accountNumber + " " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/pay")
+    public ResponseEntity<?> pay(
+            @RequestParam("sender") String senderAccountNumber,
+            @RequestParam("recipient") String recipientAccountNumber,
+            @RequestParam("amount") BigDecimal amount) {
+
+        try {
+            accountService.processPayment(senderAccountNumber, recipientAccountNumber, amount);
+            return ResponseEntity.ok("Payment successful!");
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 }
